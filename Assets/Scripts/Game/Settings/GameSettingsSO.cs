@@ -14,6 +14,7 @@ namespace Game.Settings
         public float MaxGravitySpeed => maxGravitySpeed;
         public Vector3 CameraUIPosition => cameraUIPosition;
         public Vector3 CameraUIRotation => cameraUIRotation;
+        public float TimeToRestartLevel => timeToRestartLevel;
 
         [SerializeField] private PlayerSO playerSO;
         [SerializeField] private CameraSO cameraSO;
@@ -21,6 +22,7 @@ namespace Game.Settings
         [SerializeField] private float gravityConstant = -9.81f;
         [SerializeField] private Vector3 cameraUIPosition;
         [SerializeField] private Vector3 cameraUIRotation;
+        [SerializeField] private float timeToRestartLevel = 3f;
     }
 }
 

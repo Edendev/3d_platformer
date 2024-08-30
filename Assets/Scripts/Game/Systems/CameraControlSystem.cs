@@ -60,8 +60,8 @@ namespace Game.Systems
         public void Destroy()
         {
             stateMachine.Dispose();
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
+            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
+            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
         }
         
         public void SetTarget(IPosition target)

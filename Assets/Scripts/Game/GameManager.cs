@@ -35,8 +35,13 @@ namespace Game
 
         private readonly UpdateSystem updateSystem = null;
 
+        private readonly float timer;
+
         public GameManager() { 
             instance = this;
+
+            // Initialize timer
+            timer = Time.time;
 
             // Create game live state and set initial values
             gameLiveState = new GameLiveState();
@@ -64,19 +69,25 @@ namespace Game
             // Create all necessary systems
             SettingsSystem settingsSystem = new SettingsSystem(gameSOContainer.LevelSettingsSO);
             updateSystem = new UpdateSystem(settingsSystem);
+            ExecutorSystem executorSystem = new ExecutorSystem(updateSystem);
             CameraControlSystem cameraControlSystem = new CameraControlSystem(gameSOContainer.GameSettingsSO, updateSystem);
             PlayerSystem playerSystem = new PlayerSystem(gameSOContainer.GameSettingsSO, updateSystem, cameraControlSystem.CameraTransform);
-            GameStateSystem gameStateSystem = new GameStateSystem(settingsSystem, updateSystem, cameraControlSystem, playerSystem, gameUI, gameKeyElements.RestartTrigger);
+            TransformablesSystem transformablesSystem = new TransformablesSystem(gameKeyElements.Transformables, updateSystem);
+            GameStateSystem gameStateSystem = new GameStateSystem(settingsSystem, updateSystem, executorSystem, transformablesSystem, cameraControlSystem, playerSystem, gameSOContainer.GameSettingsSO, gameUI, gameKeyElements.LevelCompletedTrigger);
 
             AddSystem(settingsSystem);
             AddSystem(updateSystem);
+            AddSystem(executorSystem);   
             AddSystem(cameraControlSystem);
             AddSystem(playerSystem);
             AddSystem(gameStateSystem);
+            AddSystem(transformablesSystem);
         }  
 
         public void FrameUpdate(float deltaTime)
         {
+            float elapsed = Time.time - timer;
+            if (Time.time - timer >= 1) gameUI.SetTimer(Mathf.FloorToInt(elapsed / 60f), (int)(elapsed % 60));
             updateSystem.FrameUpdate(deltaTime);
         }
 

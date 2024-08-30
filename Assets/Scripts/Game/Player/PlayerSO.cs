@@ -16,6 +16,7 @@ namespace Game.Player
         public float JumpMoveSpeedModifier => jumpMoveSpeedModifier;
         public float MinJumpTime => minJumpTime;
         public float DecelerationTime => decelerationTime;
+        public float InteractionRange => interactionRange;
 
         [SerializeField] private GameObject playerGO;
         [SerializeField] private float walkingSpeed;
@@ -26,5 +27,6 @@ namespace Game.Player
         [SerializeField, Range(0f, 1f)] private float jumpMoveSpeedModifier;
         [SerializeField] private float minJumpTime;
         [SerializeField] private float decelerationTime;
+        [SerializeField] private float interactionRange;
     }
 }

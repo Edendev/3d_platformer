@@ -2,7 +2,11 @@ using Game.PhysicsSystem;
 using Game.Settings;
 using Game.States;
 using Game.Interfaces;
+using Game.Interaction;
 using UnityEngine;
+using Game.Tween;
+using System;
+using UnityEditor;
 
 namespace Game.Systems
 {
@@ -16,12 +20,18 @@ namespace Game.Systems
         private readonly int hash;
 
         private readonly PhysicsModule physicsModule;
+        private readonly TweenableModule tweenableModule;
+        private readonly PlayerDeathModule deathModule;
+        private readonly InteractionModule interactionModule;
+
         private readonly UpdateSystem updateSystem;
         private GameObject playerGO;
 
         public PlayerSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, Transform cameraTransform)
         {
             this.updateSystem = updateSystem;
+
+            this.hash = this.GetHashCode();
 
             playerGO = GameObject.Instantiate(gameSettingsSO.PlayerSO.PlayerGO);
             playerGO.SetActive(false);
@@ -34,7 +44,26 @@ namespace Game.Systems
 #endif
             }
 
+            TriggerEventsAnnouncer triggerEventsAnnouncer = playerGO.GetComponent<TriggerEventsAnnouncer>();
+            if (triggerEventsAnnouncer == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning($"{nameof(PlayerSystem)} player is missing an TriggerEventsAnnouncer component");
+#endif
+            }
+
+            CollisionEventsAnnouncer collisionEventsAnnouncer = playerGO.GetComponent<CollisionEventsAnnouncer>();
+            if (collisionEventsAnnouncer == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning($"{nameof(PlayerSystem)} player is missing an CollisionEventsAnnouncer component");
+#endif
+            }
+
             physicsModule = new PhysicsModule(gameSettingsSO.MaxGravitySpeed, gameSettingsSO.GravityConstant, playerGO.transform);
+            tweenableModule = new TweenableModule(physicsModule, playerGO.transform);
+            deathModule = new PlayerDeathModule(triggerEventsAnnouncer, collisionEventsAnnouncer);
+            interactionModule = new InteractionModule(playerGO, gameSettingsSO.PlayerSO.InteractionRange);
 
             stateMachine = new StateMachine();
             idlState = new PlayerIdlState(0, StateDefinitions.Player.Idl, stateMachine, animator, physicsModule);
@@ -50,6 +79,10 @@ namespace Game.Systems
 
         public void Destroy() {
             stateMachine.Dispose();
+            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
+            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
+            tweenableModule?.Dispose();
+            deathModule?.Dispose();
         }
 
         public void SpawnPlayer(Vector3 position)
@@ -70,14 +103,19 @@ namespace Game.Systems
             updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
         }
 
+        public void SubscribeToDeathEvent(Action listener) => deathModule.onDeath += listener;
+        public void UnsubscribeTFromeathEvent(Action listener) => deathModule.onDeath -= listener;
+
         public void FrameUpdate(float deltaTime)
         {
+            interactionModule.Update(deltaTime);
             stateMachine.Update(deltaTime);
         }
 
         public void FixUpdate(float deltaTime)
         {
             physicsModule.Update(deltaTime);
+            tweenableModule.Update(deltaTime);
             stateMachine.FixedUpdate(deltaTime);
         }
 

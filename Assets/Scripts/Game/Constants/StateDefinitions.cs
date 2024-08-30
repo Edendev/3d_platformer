@@ -8,7 +8,8 @@ public static class StateDefinitions
     {
         public static string Start => "GameStartState";
         public static string Level => "GameLevelState";
-        public static string End => "GameEndState";
+        public static string LevelCompleted => "GameLevelCompletedState";
+        public static string GameOver => "GameOverState";
     }
 
     public static class Player

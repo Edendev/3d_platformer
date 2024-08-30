@@ -8,6 +8,7 @@ using Game.Settings;
 using UnityEngine.Jobs;
 using Game.CameraControl;
 using Game.Utiles;
+using Game.Utils;
 
 namespace Game.States
 {
@@ -15,20 +16,25 @@ namespace Game.States
     {
         private const float FOLLOW_DISTANCE_THRESHOLD = 0.2f;
 
-        private readonly Vector3 targetOffset;
-        private readonly Quaternion orientation;
+        private readonly PositionRotation[] targetOffsets;
+        private readonly Quaternion[] orientations;
         private readonly float movementSpeed;
         private readonly float rotationSpeed;
 
+        private int currentOffsetIndex = 0;
         private IPosition target;
         private ObstacleAvoidanceModule obstacleAvoidanceModule;
 
         public CameraFollowTargetState(uint id, string name, StateMachine stateMachine, Transform transform, ObstacleAvoidanceModule obstacleAvoidanceModule, CameraSO cameraSO) : base(id, name, stateMachine, transform) { 
             this.obstacleAvoidanceModule = obstacleAvoidanceModule;
-            this.targetOffset = cameraSO.TargetOffset;
+            this.targetOffsets = cameraSO.TargetOffsets;
             this.movementSpeed = cameraSO.MovementSpeed;
             this.rotationSpeed = cameraSO.RotationSpeed;
-            this.orientation = Quaternion.Euler(cameraSO.Orientation);
+            this.orientations = new Quaternion[targetOffsets.Length];
+            for(int i = 0; i < orientations.Length; i++)
+            {
+                orientations[i] = Quaternion.Euler(targetOffsets[i].Rotation);
+            }
         }
 
         public override System.Type GetType() => typeof(CameraFollowTargetState);
@@ -48,12 +54,22 @@ namespace Game.States
 
         public override void Update(float deltaTime)
         {
-            Vector3 move = (target.Position + targetOffset + obstacleAvoidanceModule.CurrentAvoidanceOffset) - transform.position;
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                currentOffsetIndex = currentOffsetIndex - 1 >= 0 ? currentOffsetIndex - 1 : targetOffsets.Length - 1;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                currentOffsetIndex = currentOffsetIndex + 1 < targetOffsets.Length ? currentOffsetIndex + 1 : 0;
+            }
+
+            Vector3 move = (target.Position + targetOffsets[currentOffsetIndex].Position + obstacleAvoidanceModule.CurrentAvoidanceOffset) - transform.position;
             if (move.magnitude > FOLLOW_DISTANCE_THRESHOLD) {
                 move = move != Vector3.zero ? move.normalized : move;
                 transform.position = transform.position + move * movementSpeed * deltaTime;
             }
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, orientation, rotationSpeed * deltaTime);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, orientations[currentOffsetIndex], rotationSpeed * deltaTime);
         }
 
         public override void FixedUpdate(float deltaTime)

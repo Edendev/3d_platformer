@@ -1,22 +1,20 @@
-using Game.CameraControl;
 using Game.Systems;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Game.States
 {
-    public class GameEndState : GameState
+    public class GameLevelCompletedState : GameState
     {
         private readonly GameUIBehaviour gameUI;
-        public GameEndState(uint id, string name, StateMachine stateMachine, CameraControlSystem camera, GameUIBehaviour gameUI) : base(id, name, stateMachine, camera) { 
+        public GameLevelCompletedState(uint id, string name, StateMachine stateMachine, CameraControlSystem camera, GameUIBehaviour gameUI) : base(id, name, stateMachine, camera)
+        {
             this.gameUI = gameUI;
         }
-        public override System.Type GetType() => typeof(GameEndState);
+        public override System.Type GetType() => typeof(GameLevelCompletedState);
         public override void Enter()
         {
             base.Enter();
             camera.ChangeState(StateDefinitions.Camera.UI);
+            gameUI.EnableLevelCompletedText();
             gameUI.EnableRestartButton();
             gameUI.SubscribeToRestartGameButtonClickEvent(OnStartButtonClickEvent);
         }
@@ -28,6 +26,7 @@ namespace Game.States
 
         public override void Exit()
         {
+            gameUI.DisableLevelCompletedText();
             gameUI.DisableRestartButton();
             gameUI.UnsubscribeFromRestartGameButtonClickEvent(OnStartButtonClickEvent);
             base.Exit();

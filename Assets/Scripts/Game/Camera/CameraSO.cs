@@ -1,3 +1,4 @@
+using Game.Utils;
 using UnityEngine;
 
 namespace Game.CameraControl
@@ -6,17 +7,15 @@ namespace Game.CameraControl
     public class CameraSO : ScriptableObject
     {
         public GameObject CameraGO => cameraGO;
-        public Vector3 TargetOffset => targetOffset;
-        public Vector3 Orientation => orientation;
+        public PositionRotation[] TargetOffsets => targetOffsets;
         public float MovementSpeed => movementSpeed;
         public float RotationSpeed => rotationSpeed;
         public float ObstacleAvoidanceRadius => obstacleAvoidanceRadius;
         public float ObstacleAvoidanceSpeed => obstacleAvoidanceSpeed;
 
         [SerializeField] private GameObject cameraGO;
-        [SerializeField, Tooltip("Offset relative to the target when in Follow Target State")]
-        private Vector3 targetOffset;
-        [SerializeField] private Vector3 orientation;
+        [SerializeField, Tooltip("Offsets relative to the target when in Follow Target State")]
+        private PositionRotation[] targetOffsets;
         [SerializeField] private float movementSpeed;
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float obstacleAvoidanceRadius;

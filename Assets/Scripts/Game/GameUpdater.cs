@@ -50,12 +50,13 @@ namespace Game
         {
             if (!updatablesIndexes.ContainsKey(hash)) return;
 
-            for (int i = updatablesIndexes[hash] + 1; i < updatables.Length; i++)
+            int endIndex = currentUpdatablesIndex >= updatables.Length ? updatables.Length : currentUpdatablesIndex + 1;
+            for (int i = updatablesIndexes[hash] + 1; i < endIndex; i++)
             {
                 updatables[i - 1] = updatables[i];
             }
 
-            updatables[updatables.Length - 1] = null;
+            updatables[currentUpdatablesIndex] = null;
             updatablesIndexes.Remove(hash);
             currentUpdatablesIndex--;
         }

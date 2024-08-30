@@ -53,3 +53,4 @@ MonoBehaviour:
   jumpMoveSpeedModifier: 1
   minJumpTime: 0.05
   decelerationTime: 0.1
+  interactionRange: 1
