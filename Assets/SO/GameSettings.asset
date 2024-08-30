@@ -13,3 +13,8 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   playerSO: {fileID: 11400000, guid: 41ae0a7e853b72544a3dffbecac6a7d8, type: 2}
+  cameraSO: {fileID: 11400000, guid: 70fe405d21a6b6646b9a6d58bc641deb, type: 2}
+  maxGravitySpeed: -8
+  gravityConstant: -9.81
+  cameraUIPosition: {x: 0, y: 0, z: 0}
+  cameraUIRotation: {x: 0, y: 0, z: 0}

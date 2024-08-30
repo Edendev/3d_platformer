@@ -7,7 +7,6 @@ namespace Game.Systems
 {   
     public interface ISystem
     {
-        void Create();
         void Destroy();
     }
 }

@@ -15,9 +15,19 @@ namespace Game
             gameManager = GameManager.Instance;
         }
 
+        private void OnDestroy()
+        {
+            gameManager?.Dispose();
+        }
+
         private void Update()
         {
             gameManager.FrameUpdate(Time.deltaTime);
+        }
+
+        private void FixedUpdate()
+        {
+            gameManager.FixedUpdate(Time.fixedDeltaTime);
         }
     }
 }

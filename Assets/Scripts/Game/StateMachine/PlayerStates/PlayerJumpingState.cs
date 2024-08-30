@@ -1,13 +1,103 @@
+using Game.Settings;
 using Game.Systems;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.PhysicsSystem;
+using Game.Utiles;
+using Game.Player;
 
 namespace Game.States
 {
     public class PlayerJumpingState : PlayerState
     {
-        public PlayerJumpingState(uint id, string name, StateMachine stateMachine, Animator animator) : base(id, name, stateMachine, animator) { }
+        private readonly float maxJumpHeight;
+        private readonly float maxJumpSpeed;
+        private readonly AnimationCurve jumpSpeedCurve;
+        private readonly float jumpMoveSpeed;
+        private readonly float rotationSpeed;
+        private readonly float minJumpTime;
+        private readonly float decelerationTime;
+        private readonly Transform cameraTransform;
+
+        private Modifier<float> gravityModifier;
+
+        private float startHeight;
+        private float currentJumpSpeed;
+        private float jumpTimer;
+        private float decelerationTimer;
+        private float finalJumpSpeed;
+        private bool isStopping = false;
+
+        public PlayerJumpingState(uint id, string name, StateMachine stateMachine, Animator animator, PhysicsModule physics, PlayerSO playerSO, Transform cameraTransform) : base(id, name, stateMachine, animator, physics) {
+            this.maxJumpHeight = playerSO.MaxJumpHeight;
+            this.jumpMoveSpeed = playerSO.WalkingSpeed * playerSO.JumpMoveSpeedModifier;
+            this.maxJumpSpeed = playerSO.MaxJumpSpeed;
+            this.jumpSpeedCurve = playerSO.JumpSpeedCurve;
+            this.rotationSpeed = playerSO.RotationSpeed;
+            this.minJumpTime = playerSO.MinJumpTime;
+            this.decelerationTime = playerSO.DecelerationTime;
+            this.gravityModifier = new Modifier<float>(0.5f, new MultiplyFloatModification(), this);
+            this.cameraTransform = cameraTransform;
+        }
         public override System.Type GetType() => typeof(PlayerJumpingState);
+
+        public override void Enter() {
+            base.Enter();
+            physics.AddGravityModifier(gravityModifier);
+            isStopping = false;
+            jumpTimer = Time.time;
+            startHeight = animator.transform.position.y;
+            currentJumpSpeed = jumpSpeedCurve.Evaluate(0f) * maxJumpSpeed;
+            animator?.SetBool("isJumping", true);
+        }
+
+        public override void FixedUpdate(float deltaTime) {
+            base.FixedUpdate(deltaTime);
+
+            float deltaHeight = animator.transform.position.y - startHeight;
+            bool hasReachedMinJumpTime = Time.time - jumpTimer >= minJumpTime;
+
+            if (!isStopping && (deltaHeight >= maxJumpHeight || (hasReachedMinJumpTime && !Input.GetKey(KeyCode.Space)))) {
+                isStopping = true;
+                decelerationTimer = Time.time;
+                finalJumpSpeed = currentJumpSpeed;
+            }
+
+            if (Mathf.Approximately(currentJumpSpeed, 0f)) {
+                StateMachine.ChangeState(StateDefinitions.Player.Idl);
+                return;
+            }
+
+            if (isStopping) {
+                float blend = (Time.time - decelerationTimer) / decelerationTime;
+                currentJumpSpeed = Mathf.Lerp(finalJumpSpeed, 0f, blend);
+            } else
+            {
+                float heightFraction = deltaHeight / maxJumpHeight;
+                currentJumpSpeed = jumpSpeedCurve.Evaluate(heightFraction) * maxJumpSpeed;
+            }
+
+            MoveTowards(Vector3.up, currentJumpSpeed, deltaTime);
+
+            float horizontal = Input.GetAxis("Horizontal");
+            float vertical = Input.GetAxis("Vertical");
+
+            if (Mathf.Approximately(horizontal, 0f) && Mathf.Approximately(vertical, 0f)) {
+                return;
+            }
+
+            Vector3 move = cameraTransform.right * horizontal + cameraTransform.forward * vertical;
+            move.y = 0f;
+            move = move != Vector3.zero ? move.normalized : move;
+            MoveTowards(move, jumpMoveSpeed, deltaTime);
+            FaceTowards(move, rotationSpeed, deltaTime);
+        }
+
+        public override void Exit() {
+            physics.RemoveGravityModifier(this);
+            animator?.SetBool("isJumping", false);
+            base.Exit();
+        }
     }
 }

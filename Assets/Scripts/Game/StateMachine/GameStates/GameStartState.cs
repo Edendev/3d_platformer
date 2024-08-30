@@ -1,19 +1,25 @@
+using Game.CameraControl;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Systems;
 
 namespace Game.States
 {
-    public class GameStartState : State
+    public class GameStartState : GameState
     {
-        public GameStartState(uint id, string name, StateMachine stateMachine) : base(id, name, stateMachine) { }
+        private readonly GameUIBehaviour gameUI;
+        public GameStartState(uint id, string name, StateMachine stateMachine, CameraControlSystem camera, GameUIBehaviour gameUI) : base(id, name, stateMachine, camera) { 
+            this.gameUI = gameUI;
+        }
         public override System.Type GetType() => typeof(GameStartState);
 
         public override void Enter()
         {
             base.Enter();
-            GameManager.Instance.GameUI.EnableStartButton();
-            GameManager.Instance.GameUI.SubscribeToStartGameButtonClickEvent(OnStartButtonClickEvent);
+            camera.ChangeState(StateDefinitions.Camera.UI);
+            gameUI.EnableStartButton();
+            gameUI.SubscribeToStartGameButtonClickEvent(OnStartButtonClickEvent);
         }
 
         private void OnStartButtonClickEvent()
@@ -23,8 +29,8 @@ namespace Game.States
 
         public override void Exit()
         {
-            GameManager.Instance.GameUI.DisableStartButton();
-            GameManager.Instance.GameUI.UnsubscribeFromStartGameButtonClickEvent(OnStartButtonClickEvent);
+            gameUI.DisableStartButton();
+            gameUI.UnsubscribeFromStartGameButtonClickEvent(OnStartButtonClickEvent);
             base.Exit();
         }
     }

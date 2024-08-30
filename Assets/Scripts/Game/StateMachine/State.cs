@@ -18,8 +18,8 @@ namespace Game.States
         public abstract Type GetType();
         public virtual void Enter() { }
         public virtual void Update(float deltaTime) { }
-        public virtual void PhysicsUpdate() { }
-        public virtual void LateUpdate() { }
+        public virtual void FixedUpdate(float deltaTime) { }
+        public virtual void LateUpdate(float deltaTime) { }
         public virtual void Exit() { }
         public virtual void Dispose()
         {

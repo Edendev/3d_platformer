@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: LevelSettings_0
   m_EditorClassIdentifier: 
   levelId: 0
-  playerStartPosition: {x: 0, y: 3, z: 0}
-  initialUpdatablesCapacity: 0
+  playerStartPosition: {x: 0, y: 5, z: 0}
+  initialUpdatablesCapacity: 100

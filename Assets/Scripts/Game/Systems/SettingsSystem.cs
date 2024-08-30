@@ -10,10 +10,11 @@ namespace Game.Systems
     {
         private LevelSettingsSO[] levelSettings = new LevelSettingsSO[0];
 
-        public void Create()
+        public SettingsSystem(LevelSettingsSO[] allLevelSettings)
         {
-            // Get all level settings
-            foreach (LevelSettingsSO levelSettingsSO in GameManager.Instance.GameSOContainer.LevelSettingsSO)
+            levelSettings = new LevelSettingsSO[allLevelSettings.Length];
+          
+            foreach (LevelSettingsSO levelSettingsSO in allLevelSettings)
             {
                 if (levelSettingsSO == null) continue;
                 if (levelSettingsSO.LevelID >= levelSettings.Length)
@@ -29,7 +30,7 @@ namespace Game.Systems
 
         public void Destroy()
         {
-
+            levelSettings = null;
         }
 
         public Vector3 GetLevelStartPosition(uint levelId)

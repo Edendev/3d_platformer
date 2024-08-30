@@ -17,4 +17,10 @@ public static class StateDefinitions
         public static string Walking => "Walking";
         public static string Jumping => "Jumping";
     }
+
+    public static class  Camera
+    {
+        public static string FollowTarget => "FollowTarget";
+        public static string UI => "UI";
+    }
 }

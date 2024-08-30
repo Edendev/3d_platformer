@@ -29,14 +29,14 @@ namespace Game.States
             currentState.Update(deltaTime);
         }
 
-        public void PhysicsUpdate() {
+        public void FixedUpdate(float deltaTime) {
             if (currentState == null) return;
-            currentState.PhysicsUpdate();
+            currentState.FixedUpdate(deltaTime);
         }
 
-        public void LateUpdate() {
+        public void LateUpdate(float deltaTime) {
             if (currentState == null) return;
-            currentState.LateUpdate();
+            currentState.LateUpdate(deltaTime);
         }
 
         public bool ChangeState(uint stateID) {

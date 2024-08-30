@@ -2,6 +2,7 @@ using Game.Systems;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Game
@@ -13,47 +14,49 @@ namespace Game
         private Dictionary<int, int> updatablesIndexes = new Dictionary<int, int>();
 
         private int currentUpdatablesIndex = 0;
-        private IUpdatable[] updatables = new IUpdatable[0];
+        private Action<float>[] updatables = new Action<float>[0];
 
         public GameUpdater(SettingsSystem settingsSystem) {
-            updatables = new IUpdatable[settingsSystem.GetLevelUpdatablesCapacity(GameManager.Instance.CurrentLevelId)];
+            updatables = new Action<float>[settingsSystem.GetLevelUpdatablesCapacity(GameManager.Instance.CurrentLevelId)];
         }
         
-        public void FrameUpdate(float deltaTime)
+        public void Update(float deltaTime)
         {
             for (int i = 0; i < currentUpdatablesIndex; i++) { 
-                updatables[i].FrameUpdate(deltaTime);
+                updatables[i].Invoke(deltaTime);
             }
         }
 
-        public void AddUpdatable(IUpdatable updatable)
+        public void AddUpdatable(int hash, Action<float> updatable)
         {
+            if (updatablesIndexes.ContainsKey(hash)) return;
+
             if (currentUpdatablesIndex >= updatables.Length)
             {
 #if UNITY_EDITOR
                 Debug.LogWarning("Updatables max capacity reached. Reallocation needed");
 #endif
-                IUpdatable[] newUpdatables = new IUpdatable[updatables.Length + ARRAY_CAPACITY_INCREASE];
+                Action<float>[] newUpdatables = new Action<float>[updatables.Length + ARRAY_CAPACITY_INCREASE];
                 Array.Copy(updatables, newUpdatables, updatables.Length);
                 updatables = newUpdatables;
             }
 
             updatables[currentUpdatablesIndex] = updatable; 
-            updatablesIndexes.TryAdd(updatable.Hash, currentUpdatablesIndex);
+            updatablesIndexes.TryAdd(hash, currentUpdatablesIndex);
             currentUpdatablesIndex++;
         }
 
-        public void RemoveUpdatable(IUpdatable updatable)
+        public void RemoveUpdatable(int hash)
         {
-            if (!updatablesIndexes.ContainsKey(updatable.Hash)) return;
+            if (!updatablesIndexes.ContainsKey(hash)) return;
 
-            for (int i = updatablesIndexes[updatable.Hash] + 1; i < updatables.Length; i++)
+            for (int i = updatablesIndexes[hash] + 1; i < updatables.Length; i++)
             {
                 updatables[i - 1] = updatables[i];
             }
 
             updatables[updatables.Length - 1] = null;
-            updatablesIndexes.Remove(updatable.Hash);
+            updatablesIndexes.Remove(hash);
             currentUpdatablesIndex--;
         }
 

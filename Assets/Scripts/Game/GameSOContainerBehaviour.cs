@@ -9,7 +9,7 @@ namespace Game
     public class GameSOContainerBehaviour : MonoBehaviour
     {
         public GameSettingsSO GameSettingsSO => gameSettings;
-        public IReadOnlyList<LevelSettingsSO> LevelSettingsSO => levelSettings;
+        public LevelSettingsSO[] LevelSettingsSO => levelSettings;
 
         [SerializeField] private GameSettingsSO gameSettings;
         [SerializeField] private LevelSettingsSO[] levelSettings;

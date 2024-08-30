@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using Game.States;
 using UnityEngine;
+using Game.CameraControl;
+using Game.Settings;
 
 namespace Game
 {   
@@ -24,25 +26,14 @@ namespace Game
             public uint currentLevelId;
         }
 
-        public GameSOContainerBehaviour GameSOContainer => gameSOContainer;
-        public GameUIBehaviour GameUI => gameUI;
-        public GameUpdater GameUpdater => gameUpdater;
-
-        #region StateMachine
-
-        private StateMachine gameStateMachine;
-        private GameStartState gameStartState;
-        private GameLevelState gameLevelState;
-        private GameEndState gameEndState;
-
-        #endregion
-
         public uint CurrentLevelId => gameLiveState.currentLevelId;
         private GameLiveState gameLiveState;
 
-        private GameSOContainerBehaviour gameSOContainer = null;
-        private GameUIBehaviour gameUI = null;
-        private readonly GameUpdater gameUpdater;
+        private readonly GameSOContainerBehaviour gameSOContainer = null;
+        private readonly GameUIBehaviour gameUI = null;
+        private readonly GameKeyElementsBehaviour gameKeyElements = null;
+
+        private readonly UpdateSystem updateSystem = null;
 
         public GameManager() { 
             instance = this;
@@ -60,34 +51,38 @@ namespace Game
 
             gameUI = GameObject.FindObjectOfType<GameUIBehaviour>();
 
-            if (gameUI == null)
-            {
+            if (gameUI == null) {
                 throw new Exception($"{nameof(GameUIBehaviour)} is missing in the scene.");
             }
 
-            // Create and add all necessary systems
-            SettingsSystem settings = new SettingsSystem();
-            AddSystem(settings);
+            gameKeyElements = GameObject.FindObjectOfType<GameKeyElementsBehaviour>();
 
-            // Create updater
-            this.gameUpdater = new GameUpdater(settings);
+            if (gameKeyElements == null) {
+                throw new Exception($"{nameof(GameKeyElementsBehaviour)} is missing in the scene.");
+            }
 
-            // Create and initialize state machine
-            gameStateMachine = new StateMachine();
-            gameStartState = new GameStartState(0, StateDefinitions.GameState.Start, gameStateMachine);
-            gameLevelState = new GameLevelState(1, StateDefinitions.GameState.Level, gameStateMachine, settings);
-            gameEndState = new GameEndState(2, StateDefinitions.GameState.End, gameStateMachine);
+            // Create all necessary systems
+            SettingsSystem settingsSystem = new SettingsSystem(gameSOContainer.LevelSettingsSO);
+            updateSystem = new UpdateSystem(settingsSystem);
+            CameraControlSystem cameraControlSystem = new CameraControlSystem(gameSOContainer.GameSettingsSO, updateSystem);
+            PlayerSystem playerSystem = new PlayerSystem(gameSOContainer.GameSettingsSO, updateSystem, cameraControlSystem.CameraTransform);
+            GameStateSystem gameStateSystem = new GameStateSystem(settingsSystem, updateSystem, cameraControlSystem, playerSystem, gameUI, gameKeyElements.RestartTrigger);
 
-            gameStateMachine.AddState(gameStartState);
-            gameStateMachine.AddState(gameLevelState);
-            gameStateMachine.AddState(gameEndState);
-
-            gameStateMachine.Initialize();
+            AddSystem(settingsSystem);
+            AddSystem(updateSystem);
+            AddSystem(cameraControlSystem);
+            AddSystem(playerSystem);
+            AddSystem(gameStateSystem);
         }  
 
         public void FrameUpdate(float deltaTime)
         {
-            gameUpdater.FrameUpdate(deltaTime);
+            updateSystem.FrameUpdate(deltaTime);
+        }
+
+        public void FixedUpdate(float deltaTime)
+        {
+            updateSystem.FixedUpdate(deltaTime);
         }
     }
 }

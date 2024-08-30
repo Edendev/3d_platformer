@@ -1,27 +1,43 @@
+using Game.CameraControl;
+using Game.PhysicsSystem;
 using Game.Player;
 using Game.Systems;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.States
 {
-    public class GameLevelState : State
+    public class GameLevelState : GameState
     {
         private readonly SettingsSystem settingsSystem;
-
-        public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem) : base(id, name, stateMachine) { 
+        private readonly TriggerEventsAnnouncer restartTrigger;
+        private readonly PlayerSystem playerSystem;
+        public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, CameraControlSystem camera, PlayerSystem playerSystem, TriggerEventsAnnouncer restartTrigger) : base(id, name, stateMachine, camera) { 
             this.settingsSystem = settingsSystem;
+            this.restartTrigger = restartTrigger;
+            this.playerSystem = playerSystem;
         }
         public override System.Type GetType() => typeof(GameLevelState);
 
         public override void Enter()
         {
             base.Enter();
+            restartTrigger.onTriggerEnter += HandleOnTriggerEnterEvent;
+            playerSystem.SpawnPlayer(settingsSystem.GetLevelStartPosition(GameManager.Instance.CurrentLevelId));
+            camera.SetTarget(playerSystem);
+            camera.ChangeState(StateDefinitions.Camera.FollowTarget);
+        }
 
-            // Spawn player at start position
-            PlayerController player = GameObject.Instantiate<PlayerController>(GameManager.Instance.GameSOContainer.GameSettingsSO.PlayerSO.Player);
-            player.transform.position = settingsSystem.GetLevelStartPosition(GameManager.Instance.CurrentLevelId);
+        private void HandleOnTriggerEnterEvent(Collider other)
+        {
+            // Only the player can enter the trigger
+            StateMachine.ChangeState(StateDefinitions.GameState.End);
+        }
+
+        public override void Exit()
+        {
+            restartTrigger.onTriggerEnter -= HandleOnTriggerEnterEvent;
+            playerSystem.DespawnPlayer();
+            base.Exit();
         }
     }
 }
