@@ -6,6 +6,7 @@ namespace Game.Systems
 {
     public class ExecutorSystem : ISystem
     {
+        public ESystemAccessType AccessType => ESystemAccessType.Private;
         private struct ExecutionElement
         {
             public float timer;
@@ -23,8 +24,7 @@ namespace Game.Systems
         public ExecutorSystem(UpdateSystem updateSystem)
         {
             this.updateSystem = updateSystem;
-
-            this.hash = this.GetHashCode();
+            SystemHash.TryGetHash(typeof(ExecutorSystem), out hash);
         }
 
         public void Destroy()

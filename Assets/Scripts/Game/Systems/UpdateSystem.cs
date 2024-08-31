@@ -5,6 +5,7 @@ namespace Game.Systems
 {
     public class UpdateSystem : ISystem
     {
+        public ESystemAccessType AccessType => ESystemAccessType.Public;
         public enum EUpdateTime
         {
             FrameUpdate,

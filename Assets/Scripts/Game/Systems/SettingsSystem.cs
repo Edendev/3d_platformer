@@ -8,6 +8,8 @@ namespace Game.Systems
 {
     public class SettingsSystem : ISystem
     {
+        public ESystemAccessType AccessType => ESystemAccessType.Private;
+
         private LevelSettingsSO[] levelSettings = new LevelSettingsSO[0];
 
         public SettingsSystem(LevelSettingsSO[] allLevelSettings)
@@ -33,6 +35,11 @@ namespace Game.Systems
             levelSettings = null;
         }
 
+        public bool HasLevel(uint levelId)
+        {
+            return (levelId < levelSettings.Length);
+        }
+
         public Vector3 GetLevelStartPosition(uint levelId)
         {
             if (levelId >= levelSettings.Length) return Vector3.zero;
@@ -43,6 +50,12 @@ namespace Game.Systems
         {
             if (levelId >= levelSettings.Length) return LevelSettingsSO.DefaultUpdatablesCapacity;
             return levelSettings[levelId].InitialUpdatablesCapacity;
+        }
+
+        public int GetLevelSceneBuildIndex(uint levelId)
+        {
+            if (levelId >= levelSettings.Length) return -1;
+            return levelSettings[levelId].SceneBuildIndex;
         }
     }
 }

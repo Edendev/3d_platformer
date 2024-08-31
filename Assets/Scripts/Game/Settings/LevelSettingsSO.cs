@@ -10,10 +10,12 @@ namespace Game.Settings
         public static uint DefaultUpdatablesCapacity = 100;
 
         public uint LevelID => levelId;
+        public int SceneBuildIndex => sceneBuildIndex;
         public Vector3 PlayerStartPosition => playerStartPosition;
         public uint InitialUpdatablesCapacity => initialUpdatablesCapacity;
 
         [SerializeField] private uint levelId;
+        [SerializeField] private int sceneBuildIndex;
         [SerializeField] private Vector3 playerStartPosition;
         [SerializeField] private uint initialUpdatablesCapacity = 100;
     }

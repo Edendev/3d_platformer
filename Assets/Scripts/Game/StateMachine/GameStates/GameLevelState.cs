@@ -7,17 +7,25 @@ namespace Game.States
     public class GameLevelState : GameState
     {
         private readonly SettingsSystem settingsSystem;
+        private readonly LevelTimerSystem levelTimerSystem;
         private readonly TriggerEventsAnnouncer levelCompletedTrigger;
         private readonly PlayerSystem playerSystem;
         private readonly TransformablesSystem transformablesSystem;
+        private readonly InteractablesSystem interactablesSystem;
 
-        public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, CameraControlSystem camera, PlayerSystem playerSystem, TransformablesSystem transformablesSystem, TriggerEventsAnnouncer levelCompletedTrigger)
+        private readonly GameUIBehaviour gameUI;
+
+        public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, LevelTimerSystem levelTimerSystem, 
+            CameraControlSystem camera, PlayerSystem playerSystem, TransformablesSystem transformablesSystem, InteractablesSystem interactablesSystem, TriggerEventsAnnouncer levelCompletedTrigger, GameUIBehaviour gameUI)
             : base(id, name, stateMachine, camera)
         {
             this.settingsSystem = settingsSystem;
+            this.levelTimerSystem = levelTimerSystem;
             this.playerSystem = playerSystem;
             this.transformablesSystem = transformablesSystem;
+            this.interactablesSystem = interactablesSystem;
             this.levelCompletedTrigger = levelCompletedTrigger;
+            this.gameUI = gameUI;
         }
         public override System.Type GetType() => typeof(GameLevelState);
 
@@ -29,6 +37,10 @@ namespace Game.States
             playerSystem.SpawnPlayer(settingsSystem.GetLevelStartPosition(GameManager.Instance.CurrentLevelId));
             transformablesSystem.ResetAllTransformables();
             transformablesSystem.Start();
+            interactablesSystem.ResetAllInteractables();
+            levelTimerSystem.Start();
+            gameUI.EnableTimerCountText();
+            gameUI.EnableCollectibleCountText();
             camera.SetTarget(playerSystem);
             camera.ChangeState(StateDefinitions.Camera.FollowTarget);
         }
@@ -49,6 +61,7 @@ namespace Game.States
             playerSystem.UnsubscribeTFromeathEvent(HandleOnPlayerDeathEvent);
             playerSystem.DespawnPlayer();
             transformablesSystem.Stop();
+            levelTimerSystem.Stop();
             base.Exit();
         }
     }

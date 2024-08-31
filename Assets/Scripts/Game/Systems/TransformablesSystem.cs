@@ -8,7 +8,9 @@ namespace Game.Systems
 {
     public class TransformablesSystem : ISystem
     {
-        private int activeTrasnformablesIndex = 0;
+        public ESystemAccessType AccessType => ESystemAccessType.Private;
+
+        private int activeTransformablesIndex = 0;
         private TransformableBehaviour[] activeTransformables = new TransformableBehaviour[0];
 
         private readonly int hash;
@@ -16,8 +18,7 @@ namespace Game.Systems
 
         public TransformablesSystem(TransformableBehaviour[] allTransformables, UpdateSystem updateSystem) {
             this.updateSystem = updateSystem;
-
-            hash = this.GetHashCode();
+            SystemHash.TryGetHash(typeof(TransformablesSystem), out hash);
 
             activeTransformables = new TransformableBehaviour[allTransformables.Length];
 
@@ -53,23 +54,23 @@ namespace Game.Systems
         }
 
         private void HandleOnTransformableStartedEvent(TransformableBehaviour transformable) {
-            activeTransformables[activeTrasnformablesIndex] = transformable;
-            activeTransformables[activeTrasnformablesIndex].ActiveContainerIndex = activeTrasnformablesIndex;
-            activeTransformables[activeTrasnformablesIndex].onStopped += HandleOnTransformableStoppedEvent;
-            activeTrasnformablesIndex++;
+            activeTransformables[activeTransformablesIndex] = transformable;
+            activeTransformables[activeTransformablesIndex].ActiveContainerIndex = activeTransformablesIndex;
+            activeTransformables[activeTransformablesIndex].onStopped += HandleOnTransformableStoppedEvent;
+            activeTransformablesIndex++;
         }
 
         private void HandleOnTransformableStoppedEvent(int index) {
             activeTransformables[index].onStopped -= HandleOnTransformableStoppedEvent;
 
             // Move all transformables one up
-            int endIndex = activeTrasnformablesIndex >= activeTransformables.Length ? activeTransformables.Length : activeTrasnformablesIndex + 1;
+            int endIndex = activeTransformablesIndex >= activeTransformables.Length ? activeTransformables.Length : activeTransformablesIndex + 1;
             for (int i = index + 1; i < endIndex; i++)
             {
                 activeTransformables[i - 1] = activeTransformables[i];
             }
-            activeTransformables[activeTrasnformablesIndex] = null;
-            activeTrasnformablesIndex--;
+            activeTransformables[activeTransformablesIndex] = null;
+            activeTransformablesIndex--;
         }
 
         public void FrameUpdate(float deltaTime) {

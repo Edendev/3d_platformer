@@ -8,6 +8,7 @@ namespace Game.Systems
 {
     public class CameraControlSystem : ISystem
     {
+        public ESystemAccessType AccessType => ESystemAccessType.Private;
         public Transform CameraTransform => camera.transform;
 
         private readonly StateMachine stateMachine;
@@ -23,8 +24,7 @@ namespace Game.Systems
         public CameraControlSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem)
         {
             this.updateSystem = updateSystem;
-
-            hash = this.GetHashCode();
+            SystemHash.TryGetHash(typeof(CameraControlSystem), out hash);
 
             GameObject cameraGO = GameObject.Instantiate(
                 gameSettingsSO.CameraSO.CameraGO,

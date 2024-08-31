@@ -12,6 +12,8 @@ namespace Game.Systems
 {
     public class PlayerSystem : ISystem, IPosition
     {
+        public ESystemAccessType AccessType => ESystemAccessType.Private;
+
         private readonly StateMachine stateMachine;
         private readonly PlayerIdlState idlState;
         private readonly PlayerWalkingState walkingState;
@@ -27,11 +29,10 @@ namespace Game.Systems
         private readonly UpdateSystem updateSystem;
         private GameObject playerGO;
 
-        public PlayerSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, Transform cameraTransform)
+        public PlayerSystem(UpdateSystem updateSystem, GameSettingsSO gameSettingsSO, Transform cameraTransform)
         {
             this.updateSystem = updateSystem;
-
-            this.hash = this.GetHashCode();
+            SystemHash.TryGetHash(typeof(PlayerSystem), out hash);
 
             playerGO = GameObject.Instantiate(gameSettingsSO.PlayerSO.PlayerGO);
             playerGO.SetActive(false);

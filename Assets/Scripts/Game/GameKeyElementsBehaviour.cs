@@ -1,3 +1,4 @@
+using Game.Interaction;
 using Game.PhysicsSystem;
 using Game.Transformables;
 using System.Collections.Generic;
@@ -14,12 +15,17 @@ namespace Game
         [SerializeField] private TriggerEventsAnnouncer levelCompletedTrigger;
 
         public TransformableBehaviour[] Transformables => transformables;
+        public InteractableBehaviour[] Interactables => interactables;
 
         // Cached scene referenes 
         [SerializeField] private TransformableBehaviour[] transformables;
+        [SerializeField] private InteractableBehaviour[] interactables;
 
         private void Awake()
         {
+            // placholder
+            interactables = GameObject.FindObjectsOfType<InteractableBehaviour>();
+            transformables = GameObject.FindObjectsOfType<TransformableBehaviour>();
 #if UNITY_EDITOR
             EditorSceneManager.sceneSaved += HandleOnSceneSavedEvent;
 #endif

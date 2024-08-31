@@ -4,11 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
-{
+{   
     public class GameEntryPointBehaviour : MonoBehaviour
     {
-        GameManager gameManager = null;
+        private static GameEntryPointBehaviour instance;
+        private GameManager gameManager = null;
 
+        private void Awake()
+        {
+            if (instance != null)
+            {
+                DestroyImmediate(gameObject);
+                return;
+            }
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
         private void Start()
         {
             // Initialize game manager
