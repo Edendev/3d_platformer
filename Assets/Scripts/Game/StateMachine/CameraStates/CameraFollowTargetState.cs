@@ -18,7 +18,7 @@ namespace Game.States
 
         private readonly PositionRotation[] targetOffsets;
         private readonly Quaternion[] orientations;
-        private readonly float movementSpeed;
+        private readonly float movementSpeedMultiplier;
         private readonly float rotationSpeed;
 
         private int currentOffsetIndex = 0;
@@ -28,11 +28,10 @@ namespace Game.States
         public CameraFollowTargetState(uint id, string name, StateMachine stateMachine, Transform transform, ObstacleAvoidanceModule obstacleAvoidanceModule, CameraSO cameraSO) : base(id, name, stateMachine, transform) { 
             this.obstacleAvoidanceModule = obstacleAvoidanceModule;
             this.targetOffsets = cameraSO.TargetOffsets;
-            this.movementSpeed = cameraSO.MovementSpeed;
+            this.movementSpeedMultiplier = cameraSO.MovementSpeedMultiplier;
             this.rotationSpeed = cameraSO.RotationSpeed;
             this.orientations = new Quaternion[targetOffsets.Length];
-            for(int i = 0; i < orientations.Length; i++)
-            {
+            for(int i = 0; i < orientations.Length; i++) {
                 orientations[i] = Quaternion.Euler(targetOffsets[i].Rotation);
             }
         }
@@ -54,20 +53,17 @@ namespace Game.States
 
         public override void Update(float deltaTime)
         {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
+            if (Input.GetKeyDown(KeyCode.E)) {
                 currentOffsetIndex = currentOffsetIndex - 1 >= 0 ? currentOffsetIndex - 1 : targetOffsets.Length - 1;
             }
 
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
+            if (Input.GetKeyDown(KeyCode.Q)) {
                 currentOffsetIndex = currentOffsetIndex + 1 < targetOffsets.Length ? currentOffsetIndex + 1 : 0;
             }
 
             Vector3 move = (target.Position + targetOffsets[currentOffsetIndex].Position + obstacleAvoidanceModule.CurrentAvoidanceOffset) - transform.position;
             if (move.magnitude > FOLLOW_DISTANCE_THRESHOLD) {
-                move = move != Vector3.zero ? move.normalized : move;
-                transform.position = transform.position + move * movementSpeed * deltaTime;
+                transform.position = transform.position + move * movementSpeedMultiplier * deltaTime;
             }
             transform.rotation = Quaternion.RotateTowards(transform.rotation, orientations[currentOffsetIndex], rotationSpeed * deltaTime);
         }

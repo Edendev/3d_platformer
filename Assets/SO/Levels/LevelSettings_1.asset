@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: LevelSettings_1
   m_EditorClassIdentifier: 
   levelId: 1
+  levelName: Expert!
   sceneBuildIndex: 1
   playerStartPosition: {x: 0, y: 5, z: 0}
   initialUpdatablesCapacity: 100

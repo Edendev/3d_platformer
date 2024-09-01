@@ -8,7 +8,7 @@ namespace Game.CameraControl
     {
         public GameObject CameraGO => cameraGO;
         public PositionRotation[] TargetOffsets => targetOffsets;
-        public float MovementSpeed => movementSpeed;
+        public float MovementSpeedMultiplier => movementSpeedMultiplier;
         public float RotationSpeed => rotationSpeed;
         public float ObstacleAvoidanceRadius => obstacleAvoidanceRadius;
         public float ObstacleAvoidanceSpeed => obstacleAvoidanceSpeed;
@@ -16,7 +16,7 @@ namespace Game.CameraControl
         [SerializeField] private GameObject cameraGO;
         [SerializeField, Tooltip("Offsets relative to the target when in Follow Target State")]
         private PositionRotation[] targetOffsets;
-        [SerializeField] private float movementSpeed;
+        [SerializeField, Tooltip("Multiplier to the default movement speed based on the distance to the target position")] private float movementSpeedMultiplier;
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float obstacleAvoidanceRadius;
         [SerializeField] private float obstacleAvoidanceSpeed;

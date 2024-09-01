@@ -16,7 +16,7 @@ namespace Game.Tween
         {
             this.physics = physics;
             this.transform = transform;
-            physics.onGrounded += HandleOnGroundedEvent;
+            physics.onGroundChanged += HandleOnGroundChangedEvent;
         }
 
         public void Update(float deltaTime)
@@ -26,14 +26,15 @@ namespace Game.Tween
             groundOldPosition = physics.Ground.position;
         }
 
-        private void HandleOnGroundedEvent()
+        private void HandleOnGroundChangedEvent()
         {            
+            if (physics.Ground == null) return;
             groundOldPosition = physics.Ground.position;
         }
         
         public void Dispose()
         {
-            if (physics != null) physics.onGrounded -= HandleOnGroundedEvent;
+            if (physics != null) physics.onGroundChanged -= HandleOnGroundChangedEvent;
         }
     }
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
     rotation: {x: 40, y: 180, z: 0}
   - position: {x: 4, y: 4, z: 0}
     rotation: {x: 40, y: 270, z: 0}
-  movementSpeed: 3
-  rotationSpeed: 120
+  movementSpeedMultiplier: 3
+  rotationSpeed: 360
   obstacleAvoidanceRadius: 1
   obstacleAvoidanceSpeed: 5

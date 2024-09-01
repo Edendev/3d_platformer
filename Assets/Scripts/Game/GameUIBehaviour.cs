@@ -10,13 +10,15 @@ namespace Game
         [SerializeField] private Button startGameButton;
         [SerializeField] private Button restartGameButton;
         [SerializeField] private Button nextLevelGameButton;
+        [SerializeField] private TextMeshProUGUI levelTitleText;
         [SerializeField] private TextMeshProUGUI levelCompletedText;
         [SerializeField] private TextMeshProUGUI gameOverText;
         [SerializeField] private TextMeshProUGUI timeCounterText;
         [SerializeField] private TextMeshProUGUI collectiblesCounterText;
 
-        public void Start()
+        private void Awake()
         {
+            levelTitleText.gameObject.SetActive(false);
             startGameButton.gameObject.SetActive(false);
             restartGameButton.gameObject.SetActive(false);
             nextLevelGameButton.gameObject.SetActive(false);
@@ -26,6 +28,8 @@ namespace Game
             collectiblesCounterText.gameObject.SetActive(false);
         }
 
+        public void EnableLevelTitleText() => levelTitleText.gameObject.SetActive(true);
+        public void DisableLevelTitleText() => levelTitleText.gameObject.SetActive(false);
         public void EnableStartButton() => startGameButton.gameObject.SetActive(true);
         public void DisableStartButton() => startGameButton.gameObject.SetActive(false);
         public void EnableRestartButton() => restartGameButton.gameObject.SetActive(true);
@@ -41,6 +45,7 @@ namespace Game
         public void EnableTimerCountText() => timeCounterText.gameObject.SetActive(true);
         public void DisableTimerCountText() => timeCounterText.gameObject.SetActive(false);
 
+        public void SetLevelTitle(string levelName) => levelTitleText.text = $"Level {levelName}";
         public void SetCollectibleCount(int count) => collectiblesCounterText.text = $"Coins: {count}";
         public void SetTimer(int minutes, int seconds) => timeCounterText.text = $"Time: {minutes}:{seconds}";
 

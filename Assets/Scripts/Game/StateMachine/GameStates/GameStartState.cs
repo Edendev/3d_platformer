@@ -8,8 +8,10 @@ namespace Game.States
 {
     public class GameStartState : GameState
     {
+        private readonly SettingsSystem settingsSystem;
         private readonly GameUIBehaviour gameUI;
-        public GameStartState(uint id, string name, StateMachine stateMachine, CameraControlSystem camera, GameUIBehaviour gameUI) : base(id, name, stateMachine, camera) { 
+        public GameStartState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, CameraControlSystem camera, GameUIBehaviour gameUI) : base(id, name, stateMachine, camera) { 
+            this.settingsSystem = settingsSystem;
             this.gameUI = gameUI;
         }
         public override System.Type GetType() => typeof(GameStartState);
@@ -18,6 +20,8 @@ namespace Game.States
         {
             base.Enter();
             camera.ChangeState(StateDefinitions.Camera.UI);
+            gameUI.SetLevelTitle(settingsSystem.GetLevelName(GameManager.Instance.CurrentLevelId));
+            gameUI.EnableLevelTitleText();
             gameUI.EnableStartButton();
             gameUI.SubscribeToStartGameButtonClickEvent(OnStartButtonClickEvent);
         }
@@ -29,6 +33,7 @@ namespace Game.States
 
         public override void Exit()
         {
+            gameUI.DisableLevelTitleText();
             gameUI.DisableStartButton();
             gameUI.UnsubscribeFromStartGameButtonClickEvent(OnStartButtonClickEvent);
             base.Exit();

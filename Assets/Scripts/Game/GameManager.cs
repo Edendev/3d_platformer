@@ -1,3 +1,4 @@
+using Game.SceneManagement;
 using Game.Systems;
 using System;
 using System.Collections;
@@ -19,40 +20,41 @@ namespace Game
             }
         }
 
-        private static GameManager instance;
+        private static GameManager instance = null;
         public uint CurrentLevelId { get; private set; } = 0;
 
+        // Persistent
         private GameSOContainerBehaviour gameSOContainer = null;
+        private SettingsSystem settingsSystem = null;
+        
+        // Non-persistent
         private GameUIBehaviour gameUI = null;
         private GameKeyElementsBehaviour gameKeyElements = null;
-
         private UpdateSystem updateSystem = null;
-
-        private GameEntryPointBehaviour entryPointBehaviour = null;
 
         public GameManager() { 
             instance = this;
-            Initialize();
-        } 
-        
-        private void Initialize()
-        {
-            // Get entry point 
-            entryPointBehaviour = GameObject.FindObjectOfType<GameEntryPointBehaviour>();
 
-            if (entryPointBehaviour == null)
-            {
-                throw new Exception($"{nameof(GameEntryPointBehaviour)} is missing in the scene.");
-            }
-
-            // Get scene references
+            // Get persistent references from scene
             gameSOContainer = GameObject.FindObjectOfType<GameSOContainerBehaviour>();
 
             if (gameSOContainer == null)
             {
-                throw new Exception($"{nameof(GameSOContainerBehaviour)} is missing in the scene.");
+                throw new Exception($"{nameof(GameSOContainerBehaviour)} is missing in the boot scene.");
             }
 
+            // Create settings system
+            settingsSystem = new SettingsSystem(gameSOContainer.LevelSettingsSO);
+
+            Initialize();
+
+            ScenesManager.Instance.onSceneStartsLoading += HandleOnSceneStartsLoading;
+            ScenesManager.Instance.onSceneFinishLoading += HandleOnSceneFinishLoading;
+        } 
+        
+        private void Initialize()
+        {
+            // Get scene references
             gameUI = GameObject.FindObjectOfType<GameUIBehaviour>();
 
             if (gameUI == null)
@@ -67,8 +69,7 @@ namespace Game
                 throw new Exception($"{nameof(GameKeyElementsBehaviour)} is missing in the scene.");
             }
 
-            // Create all necessary systems
-            SettingsSystem settingsSystem;
+            // Create all non-persistent systems
             ExecutorSystem executorSystem;
             LevelTimerSystem levelTimerSystem;
             CameraControlSystem cameraControlSystem;
@@ -78,7 +79,6 @@ namespace Game
             CollectiblesSystem collectiblesSystem;
             InteractablesSystem interactablesSystem;
 
-            AddSystem(settingsSystem = new SettingsSystem(gameSOContainer.LevelSettingsSO));
             AddSystem(updateSystem = new UpdateSystem(settingsSystem));
             AddSystem(executorSystem = new ExecutorSystem(updateSystem));
             AddSystem(levelTimerSystem = new LevelTimerSystem(updateSystem, gameUI));
@@ -88,36 +88,27 @@ namespace Game
             AddSystem(playerSystem = new PlayerSystem(updateSystem, gameSOContainer.GameSettingsSO, cameraControlSystem.CameraTransform));
             AddSystem(transformablesSystem = new TransformablesSystem(gameKeyElements.Transformables, updateSystem));
             AddSystem(gameStateSystem = new GameStateSystem(settingsSystem, updateSystem, executorSystem, levelTimerSystem, transformablesSystem, interactablesSystem, cameraControlSystem, playerSystem, gameSOContainer.GameSettingsSO, gameUI, gameKeyElements.LevelCompletedTrigger));
-
-            entryPointBehaviour.enabled = true;
         }
 
-        public async void LoadScene(int index)
+        private void HandleOnSceneStartsLoading(int index)
         {
             Dispose();
             gameKeyElements = null;
-            gameSOContainer = null;
             gameUI = null;
             updateSystem = null;
-            entryPointBehaviour.enabled = false; 
-            await LoadSceneTask(index);
-            CurrentLevelId++;
-            Initialize();
         }
 
-        private async Task LoadSceneTask(int index)
-        {   
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(index);
-
-            while (true)
+        private void HandleOnSceneFinishLoading(int index)
+        {
+            if (!settingsSystem.TryGetLevelIdFromSceneBuildIndex(index, out uint levelId))
             {
-                if (asyncLoad.progress >= 0.9f)
-                {
-                    break;
-                }
+#if UNITY_EDITOR
+                Debug.LogError($"Could not find level for scene build index {index} after loading complete.");
+#endif
+                return;
             }
-
-            await Task.Delay(100);
+            CurrentLevelId = levelId;
+            Initialize();
         }
 
         public void FrameUpdate(float deltaTime)

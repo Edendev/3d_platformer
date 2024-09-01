@@ -9,11 +9,11 @@ namespace Game.Transformables
         event System.Action onStopped;
         event System.Action onFinished;
 
+        void Initialize();
         void Begin(TransformableBehaviour transformable, bool reversed = false);
         void Update(float deltaTime);
         void Stop();
         Vector3 EndPosition { get; }
         Quaternion EndRotation { get; }
-        Vector3 EndScale { get; }
     }
 }

@@ -8,11 +8,23 @@ namespace Game
 {
     public class GameSOContainerBehaviour : MonoBehaviour
     {
+        private static GameSOContainerBehaviour instance;
         public GameSettingsSO GameSettingsSO => gameSettings;
         public LevelSettingsSO[] LevelSettingsSO => levelSettings;
 
         [SerializeField] private GameSettingsSO gameSettings;
         [SerializeField] private LevelSettingsSO[] levelSettings;
+
+        private void Awake()
+        {
+            if (instance != null)
+            {
+                DestroyImmediate(gameObject);
+                return;
+            }
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
 
 #if UNITY_EDITOR
         private void OnValidate()

@@ -28,7 +28,7 @@ namespace Game.Systems
 
             // Create and initialize state machine
             stateMachine = new StateMachine();
-            gameStartState = new GameStartState(0, StateDefinitions.GameState.Start, stateMachine, camera, gameUI);
+            gameStartState = new GameStartState(0, StateDefinitions.GameState.Start, stateMachine, settingsSystem, camera, gameUI);
             gameLevelState = new GameLevelState(1, StateDefinitions.GameState.Level, stateMachine, settingsSystem, levelTimerSystem, camera, playerSystem, transformablesSystem, interactablesSystem, levelCompletedTrigger, gameUI);
             gameLevelCompleted = new GameLevelCompletedState(2, StateDefinitions.GameState.LevelCompleted, stateMachine, settingsSystem, camera, gameUI);
             gameOverState = new GameOverState(3, StateDefinitions.GameState.GameOver, stateMachine, camera, gameUI, executorSystem, gameSettingsSO.TimeToRestartLevel);

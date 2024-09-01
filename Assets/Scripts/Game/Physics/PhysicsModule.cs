@@ -9,13 +9,23 @@ namespace Game.PhysicsSystem
 {   
     public class PhysicsModule
     {
-        public event Action onGrounded;
+        public event Action onGroundChanged;
 
         public bool IsGrounded => isGrounded;
         private bool isGrounded = false;
 
-        public Transform Ground => ground;
-        private Transform ground;
+        public Transform Ground
+        {
+            get => ground;
+            set
+            {
+                if (value == ground) return;
+                ground = value;
+                onGroundChanged?.Invoke();
+            }
+        }
+
+        private Transform ground = null;
 
         private readonly Transform transform;
         private readonly ModifiableParameter<float> gravityConstant;
@@ -33,19 +43,14 @@ namespace Game.PhysicsSystem
         
         public void Update(float deltaTime)
         {
-            bool wasGrounded = IsGrounded;
-
             isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 0.5f, layerMask); 
             
             if (isGrounded) {
-                ground = hit.transform;
+                Ground = hit.transform;
                 currentGravitySpeed = 0f;
-                
-                if (!wasGrounded) {
-                    onGrounded?.Invoke();
-                }
-                
                 return;
+            } else {
+                Ground = null;
             }
             
             currentGravitySpeed = Mathf.Clamp(currentGravitySpeed + gravityConstant.Get() * deltaTime, maxGravitySpeed, 0f);

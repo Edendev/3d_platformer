@@ -1,3 +1,4 @@
+using Game.SceneManagement;
 using Game.Systems;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -26,6 +27,7 @@ namespace Game.States
             gameUI.EnableLevelCompletedText();
             gameUI.EnableRestartButton();
             gameUI.SubscribeToRestartGameButtonClickEvent(OnRestartButtonClickEvent);
+            UnityEngine.Debug.Log(GameManager.Instance.CurrentLevelId + 1);
             if (settingsSystem.HasLevel(GameManager.Instance.CurrentLevelId + 1))
             {
                 gameUI.EnableNextLevelButton();
@@ -42,7 +44,7 @@ namespace Game.States
         {
             nextSceneBuildIndex = settingsSystem.GetLevelSceneBuildIndex(GameManager.Instance.CurrentLevelId + 1);
             if (nextSceneBuildIndex == -1) return;
-            GameManager.Instance.LoadScene(nextSceneBuildIndex);
+            ScenesManager.Instance.LoadScene(nextSceneBuildIndex);
         }
 
         public override void Exit()

@@ -13,12 +13,11 @@ namespace Game.Transformables
         [SerializeField, Tooltip("Destination in local coordinates")] private Vector3 destination;
         [SerializeField] private float speed;
         public Vector3 EndPosition => destination;
-        public Quaternion EndRotation { get; } = Quaternion.identity;
-        public Vector3 EndScale { get; } = new Vector3(1f, 1f, 1f);
+        public Quaternion EndRotation => Quaternion.identity;
 
         private TransformableBehaviour transformable;
         private Vector3 worldDestination;
-
+        public void Initialize() { }
         public void Begin(TransformableBehaviour transformable, bool reversed = false) {
             this.transformable = transformable;
             worldDestination = reversed ? transformable.GetStartPointForCurrentAction() : transformable.GetStartPointForCurrentAction() + destination;
@@ -35,6 +34,6 @@ namespace Game.Transformables
             }
             transformable.transform.position = transformable.transform.position + direction.normalized * currentTranslationStep;
         }
-        public void Stop() { }
+        public void Stop() => onStopped?.Invoke();
     }
 }

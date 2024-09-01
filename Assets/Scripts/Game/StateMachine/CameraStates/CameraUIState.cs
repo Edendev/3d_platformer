@@ -14,7 +14,7 @@ namespace Game.States
     {
         private readonly Vector3 targetPosition;
         private readonly Vector3 targetRotation;
-        private readonly float movementSpeed;
+        private readonly float movementSpeedMultiplier;
         private readonly float rotationSpeed;
 
         private Quaternion targetOrientation;
@@ -22,7 +22,7 @@ namespace Game.States
         {
             this.targetPosition = gameSettingsSO.CameraUIPosition;
             this.targetRotation = gameSettingsSO.CameraUIRotation;
-            this.movementSpeed = gameSettingsSO.CameraSO.MovementSpeed;
+            this.movementSpeedMultiplier = gameSettingsSO.CameraSO.MovementSpeedMultiplier;
             this.rotationSpeed = gameSettingsSO.CameraSO.RotationSpeed;
         }
 
@@ -37,8 +37,7 @@ namespace Game.States
         public override void Update(float deltaTime)
         {
             Vector3 move = targetPosition - transform.position;
-            move = move != Vector3.zero ? move.normalized : move;
-            transform.position = transform.position + move * movementSpeed * deltaTime;
+            transform.position = transform.position + move * movementSpeedMultiplier * deltaTime;
 
             transform.rotation = Quaternion.RotateTowards(transform.rotation, targetOrientation, rotationSpeed * deltaTime);
         }

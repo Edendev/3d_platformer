@@ -24,6 +24,7 @@ namespace Game.Systems
 
             foreach(TransformableBehaviour transformable in allTransformables)
             {
+                transformable.Initialize();
                 transformable.onStarted += HandleOnTransformableStartedEvent;
                 if (transformable.StartTrigger == TransformableBehaviour.ETransformableStartTrigger.OnEnable) {
                     transformable.TryPlay();
@@ -48,8 +49,9 @@ namespace Game.Systems
 
         public void ResetAllTransformables()
         {
-            foreach(TransformableBehaviour transformable in activeTransformables) {
-                transformable.DoReset();
+            for (int i = 0; i < activeTransformablesIndex; i++)
+            {
+                activeTransformables[i].DoReset();
             }
         }
 
@@ -62,6 +64,7 @@ namespace Game.Systems
 
         private void HandleOnTransformableStoppedEvent(int index) {
             activeTransformables[index].onStopped -= HandleOnTransformableStoppedEvent;
+            activeTransformables[index].ActiveContainerIndex = -1;
 
             // Move all transformables one up
             int endIndex = activeTransformablesIndex >= activeTransformables.Length ? activeTransformables.Length : activeTransformablesIndex + 1;
@@ -69,13 +72,13 @@ namespace Game.Systems
             {
                 activeTransformables[i - 1] = activeTransformables[i];
             }
-            activeTransformables[activeTransformablesIndex] = null;
+            activeTransformables[activeTransformablesIndex - 1] = null;
             activeTransformablesIndex--;
         }
 
         public void FrameUpdate(float deltaTime) {
-            foreach(TransformableBehaviour transformable in activeTransformables) {
-                transformable.FrameUpdate(deltaTime);
+            for(int i = 0; i < activeTransformablesIndex; i++) {
+                activeTransformables[i].FrameUpdate(deltaTime);
             }
         }
     }

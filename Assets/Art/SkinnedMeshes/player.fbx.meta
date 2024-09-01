@@ -3,7 +3,22 @@ guid: 421cb176188e5b9438d1269078671c7f
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_belly
+    second: {fileID: 2100000, guid: 3ed15f6a77d3a694aae717c7fde9fe5d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_body
+    second: {fileID: 2100000, guid: 5cb2be816a28f354c8e2a27dbc4d677f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Player_visor
+    second: {fileID: 2100000, guid: b3ceb119e7c24ae4f8f037cdb00425dc, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

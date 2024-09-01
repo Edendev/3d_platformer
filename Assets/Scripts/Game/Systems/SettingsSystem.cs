@@ -57,5 +57,24 @@ namespace Game.Systems
             if (levelId >= levelSettings.Length) return -1;
             return levelSettings[levelId].SceneBuildIndex;
         }
+        public string GetLevelName(uint levelId)
+        {
+            if (levelId >= levelSettings.Length) return "";
+            return levelSettings[levelId].LevelName;
+        }
+
+        public bool TryGetLevelIdFromSceneBuildIndex(int index, out uint levelId)
+        {
+            levelId = 0;
+            for(int i = 0; i < levelSettings.Length; i++)
+            {
+                if (levelSettings[i].SceneBuildIndex == index)
+                {
+                    levelId = levelSettings[i].LevelID;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

@@ -1,4 +1,5 @@
 using Game.PhysicsSystem;
+using System.Collections;
 using UnityEngine;
 
 namespace Game.Interaction
@@ -23,15 +24,29 @@ namespace Game.Interaction
 
         public void Update(float deltaTime)
         {
+            // Input interact
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                TryInteract(EInteractionType.Input);
+            }
+
+            // Touch interact
             if (Time.time - interactionDelayTimer < interactionDelay) return;
             interactionDelayTimer = Time.time;
 
+            TryInteract(EInteractionType.Touch);
+        }
+
+        private void TryInteract(EInteractionType interactionType)
+        {
             Collider[] interactables = Physics.OverlapSphere(interactor.transform.position, range, interactableLayerMask);
             if (interactables.Length == 0) return;
-            foreach(Collider collider in interactables) { 
+            foreach (Collider collider in interactables)
+            {
                 if (!collider.gameObject.activeSelf) continue;
                 InteractableBehaviour interactable = collider.GetComponent<InteractableBehaviour>();
                 if (interactable == null) continue;
+                if (interactable.InteractionType != interactionType) continue;
                 interactable.Interact(interactor);
             }
         }

@@ -9,11 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5250132410408489818}
-  - component: {fileID: 751916313096546035}
   - component: {fileID: 8681046698794173961}
   - component: {fileID: 2709764603637210781}
   m_Layer: 0
-  m_Name: Game
+  m_Name: SceneBehaviours
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,22 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &751916313096546035
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4972251785399051536}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c4a86d4208eb2e4fbcc1d7da1749b1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameSettings: {fileID: 11400000, guid: 43cf5252a6955bc4fa43fbc7b11deb38, type: 2}
-  levelSettings:
-  - {fileID: 11400000, guid: 8c2c059180ae2d24680f3cfad46fc257, type: 2}
-  - {fileID: 11400000, guid: 1e143c367b5f1a247af3787e4ad55541, type: 2}
 --- !u!114 &8681046698794173961
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -85,7 +68,9 @@ MonoBehaviour:
   transformables:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 0}
   interactables:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
