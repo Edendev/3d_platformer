@@ -68,7 +68,7 @@ namespace Game
             {
                 throw new Exception($"{nameof(GameKeyElementsBehaviour)} is missing in the scene.");
             }
-
+            
             // Create all non-persistent systems
             ExecutorSystem executorSystem;
             LevelTimerSystem levelTimerSystem;
@@ -84,7 +84,7 @@ namespace Game
             AddSystem(levelTimerSystem = new LevelTimerSystem(updateSystem, gameUI));
             AddSystem(collectiblesSystem = new CollectiblesSystem(gameUI));
             AddSystem(interactablesSystem = new InteractablesSystem(gameKeyElements.Interactables));
-            AddSystem(cameraControlSystem = new CameraControlSystem(gameSOContainer.GameSettingsSO, updateSystem));
+            AddSystem(cameraControlSystem = new CameraControlSystem(gameSOContainer.GameSettingsSO, updateSystem, settingsSystem));
             AddSystem(playerSystem = new PlayerSystem(updateSystem, gameSOContainer.GameSettingsSO, cameraControlSystem.CameraTransform));
             AddSystem(transformablesSystem = new TransformablesSystem(gameKeyElements.Transformables, updateSystem));
             AddSystem(gameStateSystem = new GameStateSystem(settingsSystem, updateSystem, executorSystem, levelTimerSystem, transformablesSystem, interactablesSystem, cameraControlSystem, playerSystem, gameSOContainer.GameSettingsSO, gameUI, gameKeyElements.LevelCompletedTrigger));

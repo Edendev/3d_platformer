@@ -18,10 +18,10 @@ namespace Game.States
         private readonly float rotationSpeed;
 
         private Quaternion targetOrientation;
-        public CameraUIState(uint id, string name, StateMachine stateMachine, Transform transform, GameSettingsSO gameSettingsSO) : base(id, name, stateMachine, transform)
+        public CameraUIState(uint id, string name, StateMachine stateMachine, Transform transform, GameSettingsSO gameSettingsSO, Vector3 cameraPosition, Vector3 cameraRotation) : base(id, name, stateMachine, transform)
         {
-            this.targetPosition = gameSettingsSO.CameraUIPosition;
-            this.targetRotation = gameSettingsSO.CameraUIRotation;
+            this.targetPosition = cameraPosition;
+            this.targetRotation = cameraRotation;
             this.movementSpeedMultiplier = gameSettingsSO.CameraSO.MovementSpeedMultiplier;
             this.rotationSpeed = gameSettingsSO.CameraSO.RotationSpeed;
         }

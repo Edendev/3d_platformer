@@ -46,6 +46,18 @@ namespace Game.Systems
             return levelSettings[levelId].PlayerStartPosition;
         }
 
+        public Vector3 GetCameraUIPosition(uint levelId)
+        {
+            if (levelId >= levelSettings.Length) return Vector3.zero;
+            return levelSettings[levelId].CameraUIPosition;
+        }
+
+        public Vector3 GetCameraUIRotation(uint levelId)
+        {
+            if (levelId >= levelSettings.Length) return Vector3.zero;
+            return levelSettings[levelId].CameraUIRotation;
+        }
+
         public uint GetLevelUpdatablesCapacity(uint levelId)
         {
             if (levelId >= levelSettings.Length) return LevelSettingsSO.DefaultUpdatablesCapacity;

@@ -21,15 +21,18 @@ namespace Game.Systems
         private readonly UpdateSystem updateSystem;
         private readonly Camera camera;
 
-        public CameraControlSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem)
+        public CameraControlSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, SettingsSystem settingsSystem)
         {
             this.updateSystem = updateSystem;
             SystemHash.TryGetHash(typeof(CameraControlSystem), out hash);
 
+            Vector3 cameraUIPosition = settingsSystem.GetCameraUIPosition(GameManager.Instance.CurrentLevelId);
+            Vector3 cameraUIRotation = settingsSystem.GetCameraUIRotation(GameManager.Instance.CurrentLevelId);
+
             GameObject cameraGO = GameObject.Instantiate(
                 gameSettingsSO.CameraSO.CameraGO,
-                gameSettingsSO.CameraUIPosition,
-                Quaternion.Euler(gameSettingsSO.CameraUIRotation)
+                cameraUIPosition,
+                Quaternion.Euler(cameraUIRotation)
             );
 
             camera = cameraGO.GetComponent<Camera>();
@@ -45,7 +48,7 @@ namespace Game.Systems
             );
 
             stateMachine = new StateMachine();
-            UIState = new CameraUIState(0, StateDefinitions.Camera.UI, stateMachine, camera.transform, gameSettingsSO);
+            UIState = new CameraUIState(0, StateDefinitions.Camera.UI, stateMachine, camera.transform, gameSettingsSO, cameraUIPosition, cameraUIRotation);
             followTargetState = new CameraFollowTargetState(1, StateDefinitions.Camera.FollowTarget, stateMachine, camera.transform, obstacleAvoidanceModule, gameSettingsSO.CameraSO);
 
             stateMachine.AddState(followTargetState);

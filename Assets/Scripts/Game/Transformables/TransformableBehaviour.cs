@@ -76,6 +76,7 @@ namespace Game.Transformables
         {
             currentActionIndex = 0;
             transform.position = initialWorldPosition;
+            transform.rotation = initialRotation;
             foreach(ITransformableAction action in transformableActions) {
                 action.onStopped -= HandleOnActionStopped;
                 action.onFinished -= HandleOnActionFinished;

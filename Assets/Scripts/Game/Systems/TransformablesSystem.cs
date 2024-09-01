@@ -15,9 +15,11 @@ namespace Game.Systems
 
         private readonly int hash;
         private readonly UpdateSystem updateSystem;
+        private readonly TransformableBehaviour[] allTransformables;
 
         public TransformablesSystem(TransformableBehaviour[] allTransformables, UpdateSystem updateSystem) {
             this.updateSystem = updateSystem;
+            this.allTransformables = allTransformables;
             SystemHash.TryGetHash(typeof(TransformablesSystem), out hash);
 
             activeTransformables = new TransformableBehaviour[allTransformables.Length];
@@ -49,9 +51,9 @@ namespace Game.Systems
 
         public void ResetAllTransformables()
         {
-            for (int i = 0; i < activeTransformablesIndex; i++)
+            for (int i = 0; i < allTransformables.Length; i++)
             {
-                activeTransformables[i].DoReset();
+                allTransformables[i].DoReset();
             }
         }
 
