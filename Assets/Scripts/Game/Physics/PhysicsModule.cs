@@ -1,12 +1,12 @@
-using Game.Settings;
-using Game.Utiles;
 using System;
-using System.Collections;
-using System.Collections.Generic;
+using Game.Utiles;
 using UnityEngine;
 
 namespace Game.PhysicsSystem
 {   
+    /// <summary>
+    /// Handles the player's grounding and gravity physics. The collisions are handled by the Unity physics engine.
+    /// </summary>
     public class PhysicsModule
     {
         public event Action onGroundChanged;
@@ -41,8 +41,8 @@ namespace Game.PhysicsSystem
             this.layerMask = LayerMask.GetMask("Default");
         } 
         
-        public void Update(float deltaTime)
-        {
+        public void Update(float deltaTime) {
+            // Update grounded state each frame
             isGrounded = Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 0.5f, layerMask); 
             
             if (isGrounded) {

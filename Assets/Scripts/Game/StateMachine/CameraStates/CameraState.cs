@@ -1,10 +1,4 @@
-using Game.PhysicsSystem;
-using Game.Settings;
-using Game.Systems;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Game.CameraControl;
 
 namespace Game.States
 {

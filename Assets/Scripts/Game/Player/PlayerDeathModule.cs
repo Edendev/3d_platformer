@@ -1,10 +1,12 @@
-using Game.PhysicsSystem;
-using Game.Utiles;
 using System;
+using Game.PhysicsSystem;
 using UnityEngine;
 
-namespace Game.Tween
+namespace Game.Player
 {
+    /// <summary>
+    /// Handles any trigger that causes the death of the player.
+    /// </summary>
     public class PlayerDeathModule : IDisposable
     {
         public event Action onDeath;
@@ -22,19 +24,16 @@ namespace Game.Tween
             collisionEventsAnnouncer.onCollisionEnter += HandleOnCollisionEnterEvent;
         }
 
-        private void HandleOnTriggerEnterEvent(Collider other)
-        {
+        private void HandleOnTriggerEnterEvent(Collider other) {
             if (other.gameObject.layer != obstacleLayer) return;
             onDeath?.Invoke();
         }
 
-        private void HandleOnCollisionEnterEvent(Collider other)
-        {
+        private void HandleOnCollisionEnterEvent(Collider other) {
             if (other.gameObject.layer != obstacleLayer) return;
             onDeath?.Invoke();
         }
-        public void Dispose()
-        {
+        public void Dispose() {
             triggerEventsAnnouncer.onTriggerEnter -= HandleOnTriggerEnterEvent;
             collisionEventsAnnouncer.onCollisionEnter -= HandleOnCollisionEnterEvent;
         }

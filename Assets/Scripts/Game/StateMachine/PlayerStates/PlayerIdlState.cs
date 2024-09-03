@@ -1,18 +1,20 @@
+using Game.Interaction;
 using Game.Systems;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Game.PhysicsSystem;
+using Game.Player;
+using UnityEngine;
 
 namespace Game.States
 {
     public class PlayerIdlState : PlayerState
     {
-        public PlayerIdlState(uint id, string name, StateMachine stateMachine, Animator animator, PhysicsModule physics) : base(id, name, stateMachine, animator, physics) { }
-        public override System.Type GetType() => typeof(PlayerIdlState);
+        private KeyCode jumpKey;
+        public PlayerIdlState(uint id, string name, StateMachine stateMachine, Animator animator, InteractionModule interaction, PhysicsModule physics, SettingsSystem settings) 
+            : base(id, name, stateMachine, animator, interaction, physics, settings) {
+            settings.TryGetActionKey(EPlayerAction.Jump, out jumpKey);
+        }
 
-        public override void Update(float deltaTime)
-        {
+        public override void Update(float deltaTime) {
             base.Update(deltaTime);
             float horizontal = Input.GetAxis("Horizontal");
             float vertical = Input.GetAxis("Vertical");
@@ -21,9 +23,12 @@ namespace Game.States
                 StateMachine.ChangeState(StateDefinitions.Player.Walking);
             }
 
-            if (physics.IsGrounded && Input.GetKey(KeyCode.Space)) {
+            if (physics.IsGrounded && Input.GetKey(jumpKey)) {
                 StateMachine.ChangeState(StateDefinitions.Player.Jumping);
             }
+
+            interaction.TouchInteract();
+            interaction.InputInteract();
         }
     }
 }

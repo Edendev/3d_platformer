@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Game
 {   
+    /// <summary>
+    /// Unity root singleton. 
+    /// Initializes the managers and functions as the funnel to update all the game systems.
+    /// </summary>
     public class GameEntryPointBehaviour : MonoBehaviour
     {
         private static GameEntryPointBehaviour instance;
@@ -26,7 +30,7 @@ namespace Game
 
         private void Start()
         {
-            // Initialize managers
+            // Initialize all managers on Start to allow other MonoBehaviour to "initialize" on Awake
             scenesManager = ScenesManager.Instance;
             gameManager = GameManager.Instance;
 
@@ -52,14 +56,16 @@ namespace Game
             }
         }
 
-        private void Update()
-        {
+        private void Update() {
             gameManager.FrameUpdate(Time.deltaTime);
         }
 
-        private void FixedUpdate()
-        {
+        private void FixedUpdate() {
             gameManager.FixedUpdate(Time.fixedDeltaTime);
+        }
+
+        private void LateUpdate() {
+            gameManager.LateUpdate(Time.deltaTime);
         }
     }
 }

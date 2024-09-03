@@ -1,16 +1,18 @@
-using Game.Player;
 using Game.Settings;
 using Game.PhysicsSystem;
 using Game.States;
 
 namespace Game.Systems
 {
+    /// <summary>
+    /// Handles the different states of the game. Follows a state machine pattern.
+    /// </summary>
     public class GameStateSystem : ISystem
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
+        // State machine
         private readonly StateMachine stateMachine;
-
         private readonly GameStartState gameStartState;
         private readonly GameLevelState gameLevelState;
         private readonly GameLevelCompletedState gameLevelCompleted;
@@ -40,25 +42,28 @@ namespace Game.Systems
 
             stateMachine.Initialize();
 
-            updateSystem.AddUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash, FrameUpdate);
-            updateSystem.AddUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash, FixedUpdate);
+            updateSystem.AddUpdatable(EUpdateTime.FrameUpdate, hash, FrameUpdate);
+            updateSystem.AddUpdatable(EUpdateTime.FixUpdate, hash, FixedUpdate);
+            updateSystem.AddUpdatable(EUpdateTime.LateUpdate, hash, LateUpdate);
         }
 
-        public void Destroy()
-        {
+        public void Destroy() {
             stateMachine.Dispose();
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.FrameUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.FixUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.LateUpdate, hash);
         }
 
-        private void FrameUpdate(float deltaTime)
-        {
+        private void FrameUpdate(float deltaTime) {
             stateMachine.Update(deltaTime);
         }
 
-        private void FixedUpdate(float deltaTime)
-        {
+        private void FixedUpdate(float deltaTime) {
             stateMachine.FixedUpdate(deltaTime);
+        }
+
+        private void LateUpdate(float deltaTime) {
+            stateMachine.LateUpdate(deltaTime);
         }
     }
 }

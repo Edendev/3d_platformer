@@ -4,86 +4,30 @@ using System;
 
 namespace Game.Transformables
 {
+    /// <summary>
+    /// Provides functionality to perform transformation actions in a specific order.
+    /// </summary>
     public class TransformableBehaviour : MonoBehaviour
     {
         public event Action<TransformableBehaviour> onStarted;
-        public event Action<int> onStopped;
-
-        public enum ETransformableStartTrigger
-        {
-            OnEnable,
-            OnRequest
-        }
+        public event Action<int> onStopped;        
 
         [SerializeReference, SubclassSelectorProperty] public ITransformableAction[] transformableActions;
         [SerializeField] private ETransformableStartTrigger startTrigger;
         [SerializeField] private bool playInLoop;
 
         public ETransformableStartTrigger StartTrigger => startTrigger;
-
-        public int ActiveContainerIndex { get; set; } = -1;
+        public int ActiveContainerIndex { get; set; } = -1; // index set by the TransformableSystem to keep track of the position in the container (array)
 
         private int currentActionIndex = 0;
         private bool playReversed = false;
         private Vector3 initialWorldPosition;
         private Quaternion initialRotation;
 
-        private void Start()
-        {
+        private void Start() {
+            // cache initial state
             initialWorldPosition = transform.position;
             initialRotation = transform.rotation;
-        }
-
-        public void Initialize()
-        {
-            foreach(ITransformableAction action in transformableActions) {
-                action.Initialize();
-            }
-        }
-
-        public bool TryPlay(bool reversed = false)
-        {
-            if (ActiveContainerIndex != -1)
-            {
-                if (reversed != playReversed)
-                {
-                    TryStopTransformableActions();
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            playReversed = reversed;
-            return TryStartTransformableActions();
-
-        }
-        public bool TryPlaySwapped()
-        {
-            playReversed = !playReversed;
-            if (ActiveContainerIndex != -1) {
-                TryStopTransformableActions();
-            }
-            return TryStartTransformableActions();
-        }
-
-        public bool TryStop()
-        {
-            return TryStopTransformableActions();
-        }
-
-        public void DoReset()
-        {
-            currentActionIndex = 0;
-            transform.position = initialWorldPosition;
-            transform.rotation = initialRotation;
-            foreach(ITransformableAction action in transformableActions) {
-                action.onStopped -= HandleOnActionStopped;
-                action.onFinished -= HandleOnActionFinished;
-            }
-            if (startTrigger == ETransformableStartTrigger.OnEnable) {
-                PerformCurrentAction();
-            }
         }
 
         public void FrameUpdate(float deltaTime)
@@ -91,16 +35,50 @@ namespace Game.Transformables
             transformableActions[currentActionIndex].Update(Time.deltaTime);
         }
 
-        private bool TryStartTransformableActions()
-        {
+        public void Initialize() {
+            foreach(ITransformableAction action in transformableActions) {
+                action.Initialize();
+            }
+        }
+
+        public bool TryPlay(bool reversed = false) {
+            // If the transformable was active, check if we are trying to play in a different reversed state
+            if (ActiveContainerIndex != -1) { 
+                if (reversed != playReversed) {
+                    TryStopTransformableActions();
+                } else {
+                    // otherwise do nothing
+                    return true;
+                }
+            }
+            playReversed = reversed;
+            return TryStartTransformableActions();
+
+        }
+
+        /// <summary>
+        /// Try to play always at the opposite reverse state
+        /// </summary>
+        public bool TryPlaySwapped() {
+            playReversed = !playReversed;
+            if (ActiveContainerIndex != -1) {
+                TryStopTransformableActions();
+            }
+            return TryStartTransformableActions();
+        }
+
+        public bool TryStop() {
+            return TryStopTransformableActions();
+        }
+
+        private bool TryStartTransformableActions() {
             if (transformableActions.Length == 0) return false;
             PerformCurrentAction();
             onStarted?.Invoke(this);
             return true;
-
         }
-        private bool TryStopTransformableActions()
-        {
+
+        private bool TryStopTransformableActions() {
             if (transformableActions.Length == 0) return false;
             transformableActions[currentActionIndex].onStopped -= HandleOnActionStopped;
             transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
@@ -109,8 +87,7 @@ namespace Game.Transformables
             return true;
         }
 
-        private void PerformCurrentAction()
-        {
+        private void PerformCurrentAction() {
             if (currentActionIndex < 0 || currentActionIndex >= transformableActions.Length) return; // safety check
             transformableActions[currentActionIndex].onStopped -= HandleOnActionStopped;
             transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
@@ -118,23 +95,12 @@ namespace Game.Transformables
             transformableActions[currentActionIndex].onFinished += HandleOnActionFinished;
             transformableActions[currentActionIndex].Begin(this, playReversed);
         }
-        private void HandleOnActionStopped()
-        {
-            transformableActions[currentActionIndex].onStopped -= HandleOnActionStopped;
-            transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
-            PerformNextAction();
-        }
-
-        private void HandleOnActionFinished()
-        {
-            transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
-            PerformNextAction();
-        }
 
         private void PerformNextAction()
         {
             bool isAtLastAction = currentActionIndex == 0 || currentActionIndex == transformableActions.Length - 1;
-            if (!playInLoop && isAtLastAction) {
+            if (!playInLoop && isAtLastAction)
+            {
                 onStopped?.Invoke(ActiveContainerIndex);
                 return;
             }
@@ -144,16 +110,41 @@ namespace Game.Transformables
             PerformCurrentAction();
         }
 
+        private void HandleOnActionStopped() {
+            transformableActions[currentActionIndex].onStopped -= HandleOnActionStopped;
+            transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
+            PerformNextAction();
+        }
+
+        private void HandleOnActionFinished() {
+            transformableActions[currentActionIndex].onFinished -= HandleOnActionFinished;
+            PerformNextAction();
+        }
+
+        public void DoReset()
+        {
+            currentActionIndex = 0;
+            transform.position = initialWorldPosition;
+            transform.rotation = initialRotation;
+            foreach (ITransformableAction action in transformableActions)
+            {
+                action.onStopped -= HandleOnActionStopped;
+                action.onFinished -= HandleOnActionFinished;
+            }
+            // start immediately if the trigger requires it
+            if (startTrigger == ETransformableStartTrigger.OnEnable)
+            {
+                PerformCurrentAction();
+            }
+        }
+
         /// <summary>
         /// Action by action reconstruct the path to know the exact start position of a specific action
         /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
         public Vector3 GetStartPointForCurrentAction()
         {
             Vector3 startPoint = initialWorldPosition;
-            for (int i = 0; i < currentActionIndex; i++)
-            {
+            for (int i = 0; i < currentActionIndex; i++) {
                 startPoint += transformableActions[i].EndPosition;
             }
             return startPoint;
@@ -162,13 +153,10 @@ namespace Game.Transformables
         /// <summary>
         /// Action by action reconstruct the path to know the exact start rotation of a specific action
         /// </summary>
-        /// <param name="action"></param>
-        /// <returns></returns>
         public Quaternion GetStartRotationForCurrentAction()
         {
             Quaternion startRotation = initialRotation;
-            for (int i = 0; i < currentActionIndex; i++)
-            {
+            for (int i = 0; i < currentActionIndex; i++) {
                 startRotation *= transformableActions[i].EndRotation; 
             }
             return startRotation;

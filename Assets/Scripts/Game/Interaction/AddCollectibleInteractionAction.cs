@@ -1,4 +1,3 @@
-
 using Game.Systems;
 using Game.Transformables;
 using UnityEngine;
@@ -11,17 +10,16 @@ namespace Game.Interaction
 
         private int collectiblesAddedCount = 0;
 
-        public void Initialize()
-        {
+        public void Initialize() {
             GameManager.Instance.TryGetSystem<CollectiblesSystem>(out collectiblesSystem);
         }
-        public void Perform(GameObject interactable, GameObject interactor)
-        {
+
+        public void Perform(GameObject interactable, GameObject interactor) {
             collectiblesSystem?.AddCollectible();
             collectiblesAddedCount++;
         }
-        public void Reset(GameObject interactable)
-        {
+
+        public void Reset(GameObject interactable) {
             collectiblesSystem?.RemoveCollectibles(collectiblesAddedCount);
             collectiblesAddedCount = 0;
         }

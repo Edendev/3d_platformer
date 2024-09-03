@@ -27,10 +27,8 @@ namespace Game.States
             this.levelCompletedTrigger = levelCompletedTrigger;
             this.gameUI = gameUI;
         }
-        public override System.Type GetType() => typeof(GameLevelState);
 
-        public override void Enter()
-        {
+        public override void Enter() {
             base.Enter();
             levelCompletedTrigger.onTriggerEnter += HandleOnLevelCompletedTriggerEnterEvent;
             playerSystem.SubscribeToDeathEvent(HandleOnPlayerDeathEvent);
@@ -45,18 +43,15 @@ namespace Game.States
             camera.ChangeState(StateDefinitions.Camera.FollowTarget);
         }
 
-        private void HandleOnPlayerDeathEvent()
-        {
+        private void HandleOnPlayerDeathEvent() {
             StateMachine.ChangeState(StateDefinitions.GameState.GameOver);
         }
 
-        private void HandleOnLevelCompletedTriggerEnterEvent(Collider other)
-        {
+        private void HandleOnLevelCompletedTriggerEnterEvent(Collider other) {
             StateMachine.ChangeState(StateDefinitions.GameState.LevelCompleted);
         }
 
-        public override void Exit()
-        {
+        public override void Exit() {
             levelCompletedTrigger.onTriggerEnter -= HandleOnLevelCompletedTriggerEnterEvent;
             playerSystem.UnsubscribeTFromeathEvent(HandleOnPlayerDeathEvent);
             playerSystem.DespawnPlayer();

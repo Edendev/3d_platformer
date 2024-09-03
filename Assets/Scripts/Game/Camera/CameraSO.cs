@@ -14,9 +14,10 @@ namespace Game.CameraControl
         public float ObstacleAvoidanceSpeed => obstacleAvoidanceSpeed;
 
         [SerializeField] private GameObject cameraGO;
-        [SerializeField, Tooltip("Offsets relative to the target when in Follow Target State")]
+        [SerializeField, Tooltip("Offsets relative to the player when in [FollowTargetState]")]
         private PositionRotation[] targetOffsets;
-        [SerializeField, Tooltip("Multiplier to the default movement speed based on the distance to the target position")] private float movementSpeedMultiplier;
+        [SerializeField, Tooltip("Multiplier to the default movement speed based on the distance to the player position")] 
+        private float movementSpeedMultiplier;
         [SerializeField] private float rotationSpeed;
         [SerializeField] private float obstacleAvoidanceRadius;
         [SerializeField] private float obstacleAvoidanceSpeed;

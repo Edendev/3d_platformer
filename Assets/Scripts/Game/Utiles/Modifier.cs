@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Game.Utiles
 {
     public class Modifier<T>
@@ -17,8 +13,7 @@ namespace Game.Utiles
             this.modification = modification;
         }
 
-        public T Apply(T target)
-        {
+        public T Apply(T target) {
             return modification.Modify(target, value);
         }
     }

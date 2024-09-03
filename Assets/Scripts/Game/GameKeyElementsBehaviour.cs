@@ -8,7 +8,9 @@ using UnityEngine.SceneManagement;
 
 namespace Game
 {
-    [ExecuteInEditMode]
+    /// <summary>
+    /// Container of all necessary scene references.
+    /// </summary>
     public class GameKeyElementsBehaviour : MonoBehaviour
     {
         public TriggerEventsAnnouncer LevelCompletedTrigger => levelCompletedTrigger;
@@ -17,32 +19,15 @@ namespace Game
         public TransformableBehaviour[] Transformables => transformables;
         public InteractableBehaviour[] Interactables => interactables;
 
-        // Cached scene referenes 
+        // Cached scene references 
         [SerializeField] private TransformableBehaviour[] transformables;
         [SerializeField] private InteractableBehaviour[] interactables;
 
         private void Awake()
         {
-            // placholder
+            // collect all scene references
             interactables = GameObject.FindObjectsOfType<InteractableBehaviour>();
             transformables = GameObject.FindObjectsOfType<TransformableBehaviour>();
-#if UNITY_EDITOR
-            EditorSceneManager.sceneSaved += HandleOnSceneSavedEvent;
-#endif
         }
-
-        private void OnDestroy()
-        {
-#if UNITY_EDITOR
-            EditorSceneManager.sceneSaved -= HandleOnSceneSavedEvent;
-#endif
-        }
-
-#if UNITY_EDITOR
-        private void HandleOnSceneSavedEvent(Scene scene)
-        {
-            transformables = GameObject.FindObjectsOfType<TransformableBehaviour>();
-        }
-#endif
     }
 }

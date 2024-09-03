@@ -1,28 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using UnityEngine.Rendering.VirtualTexturing;
 
 namespace Game.Systems
 {
+    /// <summary>
+    /// Container of a group of systems. Has functionality to add/remove and access systems.
+    /// </summary>
     public abstract class SystemGroup : IDisposable
     {
+        // Systems by hash
         private Dictionary<int, ISystem> systems = new Dictionary<int, ISystem>();
 
-        public void AddSystem(ISystem system)
-        {
-            if (SystemHash.TryGetHash(system.GetType(), out int hash))
-            {
+        public void AddSystem(ISystem system) {
+            if (SystemHash.TryGetHash(system.GetType(), out int hash)) {
                 systems.TryAdd(hash, system);
             }
         }
 
-        public void RemoveSystem(ISystem system)
-        {
-            if (SystemHash.TryGetHash(system.GetType(), out int hash))
-            {
+        public void RemoveSystem(ISystem system) {
+            if (SystemHash.TryGetHash(system.GetType(), out int hash)) {
                 systems.Remove(hash);
             }
         }
@@ -31,14 +27,11 @@ namespace Game.Systems
             where T : ISystem
         {
             system = default(T);
-            if (SystemHash.TryGetHash(typeof(T), out int hash))
-            {
-                if (!systems.TryGetValue(hash, out ISystem lookAtSystem))
-                {
+            if (SystemHash.TryGetHash(typeof(T), out int hash)) {
+                if (!systems.TryGetValue(hash, out ISystem lookAtSystem)) {
                     return false;
                 }
-                if (lookAtSystem.AccessType != ESystemAccessType.Public)
-                {
+                if (lookAtSystem.AccessType != ESystemAccessType.Public) {
                     return false;
                 }
                 system = (T)lookAtSystem;
@@ -46,10 +39,8 @@ namespace Game.Systems
             return true;
         }
 
-        public virtual void Dispose()
-        {   
-            foreach (ISystem system in systems.Values)
-            {
+        public virtual void Dispose() {   
+            foreach (ISystem system in systems.Values) {
                 system.Destroy();
             }
             systems.Clear();

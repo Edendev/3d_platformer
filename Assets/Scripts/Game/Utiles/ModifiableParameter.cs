@@ -1,11 +1,13 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using Game.Interfaces;
 
 namespace Game.Utiles
-{    public class ModifiableParameter<T> : IResetteable
+{   
+    /// <summary>
+    /// Enables controlled modification of parameter via mathematical operations.
+    /// </summary>
+    public class ModifiableParameter<T> : IResetteable
         where T : struct
     {
         private T defaultValue;
@@ -16,8 +18,7 @@ namespace Game.Utiles
             this.defaultValue = defaultValue;
         }
 
-        public T Get()
-        {
+        public T Get() {
             T value = defaultValue;
             foreach (Modifier<T> modifier in modifiers) {
                 value = modifier.Apply(value);
@@ -25,13 +26,11 @@ namespace Game.Utiles
             return value;
         }
 
-        public void AddModifier(Modifier<T> modifier)
-        {
+        public void AddModifier(Modifier<T> modifier) {
             modifiers.Add(modifier);
         }
 
-        public void RemoveModifierFromSource(object source)
-        {
+        public void RemoveModifierFromSource(object source) {
             modifiers = modifiers.Where(x => x.source != source).ToList();
         }
 

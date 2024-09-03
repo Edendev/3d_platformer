@@ -1,26 +1,32 @@
+using System;
 using Game.PhysicsSystem;
 using Game.Settings;
 using Game.States;
 using Game.Interfaces;
 using Game.Interaction;
-using UnityEngine;
 using Game.Tween;
-using System;
-using UnityEditor;
+using Game.Player;
+using UnityEngine;
 
 namespace Game.Systems
 {
+    /// <summary>
+    /// Handles the game logic and the spawning/despawning of the player. Follows a state machine pattern/
+    /// </summary>
     public class PlayerSystem : ISystem, IPosition
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
+        public Vector3 Position => playerGO.transform.position;
 
+        private readonly int hash;
+
+        // State machine
         private readonly StateMachine stateMachine;
         private readonly PlayerIdlState idlState;
         private readonly PlayerWalkingState walkingState;
         private readonly PlayerJumpingState jumpingState;
 
-        private readonly int hash;
-
+        // Modules
         private readonly PhysicsModule physicsModule;
         private readonly TweenableModule tweenableModule;
         private readonly PlayerDeathModule deathModule;
@@ -29,7 +35,7 @@ namespace Game.Systems
         private readonly UpdateSystem updateSystem;
         private GameObject playerGO;
 
-        public PlayerSystem(UpdateSystem updateSystem, GameSettingsSO gameSettingsSO, Transform cameraTransform)
+        public PlayerSystem(UpdateSystem updateSystem, GameSettingsSO gameSettingsSO, SettingsSystem settingsSystem, Transform cameraTransform)
         {
             this.updateSystem = updateSystem;
             SystemHash.TryGetHash(typeof(PlayerSystem), out hash);
@@ -40,36 +46,33 @@ namespace Game.Systems
             Animator animator = playerGO.GetComponent<Animator>();
             if (animator == null)
             {
-#if UNITY_EDITOR
                 Debug.LogError($"{nameof(PlayerSystem)} player is missing an Animator component");
-#endif
+                return;
             }
 
             TriggerEventsAnnouncer triggerEventsAnnouncer = playerGO.GetComponent<TriggerEventsAnnouncer>();
             if (triggerEventsAnnouncer == null)
             {
-#if UNITY_EDITOR
-                Debug.LogWarning($"{nameof(PlayerSystem)} player is missing an TriggerEventsAnnouncer component");
-#endif
+                Debug.LogError($"{nameof(PlayerSystem)} player is missing an TriggerEventsAnnouncer component");
+                return;
             }
 
             CollisionEventsAnnouncer collisionEventsAnnouncer = playerGO.GetComponent<CollisionEventsAnnouncer>();
             if (collisionEventsAnnouncer == null)
             {
-#if UNITY_EDITOR
-                Debug.LogWarning($"{nameof(PlayerSystem)} player is missing an CollisionEventsAnnouncer component");
-#endif
+                Debug.LogError($"{nameof(PlayerSystem)} player is missing an CollisionEventsAnnouncer component");
+                return;
             }
 
             physicsModule = new PhysicsModule(gameSettingsSO.MaxGravitySpeed, gameSettingsSO.GravityConstant, playerGO.transform);
             tweenableModule = new TweenableModule(physicsModule, playerGO.transform);
             deathModule = new PlayerDeathModule(triggerEventsAnnouncer, collisionEventsAnnouncer);
-            interactionModule = new InteractionModule(playerGO, gameSettingsSO.PlayerSO.InteractionRange);
+            interactionModule = new InteractionModule(playerGO, gameSettingsSO.PlayerSO.InteractionRange, settingsSystem);
 
             stateMachine = new StateMachine();
-            idlState = new PlayerIdlState(0, StateDefinitions.Player.Idl, stateMachine, animator, physicsModule);
-            walkingState = new PlayerWalkingState(1, StateDefinitions.Player.Walking, stateMachine, animator, physicsModule, gameSettingsSO.PlayerSO, cameraTransform);
-            jumpingState = new PlayerJumpingState(2, StateDefinitions.Player.Jumping, stateMachine, animator, physicsModule, gameSettingsSO.PlayerSO, cameraTransform);
+            idlState = new PlayerIdlState(0, StateDefinitions.Player.Idl, stateMachine, animator, interactionModule, physicsModule, settingsSystem);
+            walkingState = new PlayerWalkingState(1, StateDefinitions.Player.Walking, stateMachine, animator, interactionModule, physicsModule, gameSettingsSO.PlayerSO, cameraTransform, settingsSystem);
+            jumpingState = new PlayerJumpingState(2, StateDefinitions.Player.Jumping, stateMachine, animator, interactionModule, physicsModule, gameSettingsSO.PlayerSO, cameraTransform, settingsSystem);
 
             stateMachine.AddState(idlState);
             stateMachine.AddState(walkingState);
@@ -80,46 +83,43 @@ namespace Game.Systems
 
         public void Destroy() {
             stateMachine.Dispose();
-            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
-            updateSystem?.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
             tweenableModule?.Dispose();
             deathModule?.Dispose();
-        }
-
-        public void SpawnPlayer(Vector3 position)
-        {
-            playerGO.transform.position = position;
-            playerGO.transform.rotation = Quaternion.identity;
-            playerGO.SetActive(true);
-
-            updateSystem.AddUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash, FrameUpdate);
-            updateSystem.AddUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash, FixUpdate);
-        }
-
-        public void DespawnPlayer()
-        {
-            playerGO.SetActive(false);
-
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FixUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.FrameUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.FixUpdate, hash);
         }
 
         public void SubscribeToDeathEvent(Action listener) => deathModule.onDeath += listener;
         public void UnsubscribeTFromeathEvent(Action listener) => deathModule.onDeath -= listener;
 
-        public void FrameUpdate(float deltaTime)
-        {
-            interactionModule.Update(deltaTime);
+        public void SpawnPlayer(Vector3 position) {
+            playerGO.transform.position = position;
+            playerGO.transform.rotation = Quaternion.identity;
+            playerGO.SetActive(true);
+            updateSystem.AddUpdatable(EUpdateTime.FrameUpdate, hash, FrameUpdate);
+            updateSystem.AddUpdatable(EUpdateTime.FixUpdate, hash, FixUpdate);
+            updateSystem.AddUpdatable(EUpdateTime.LateUpdate, hash, LateUpdate);
+        }
+
+        public void DespawnPlayer() {
+            playerGO.SetActive(false);
+            updateSystem.RemoveUpdatable(EUpdateTime.FrameUpdate, hash);
+            updateSystem.RemoveUpdatable(EUpdateTime.FixUpdate, hash);
+            updateSystem.RemoveUpdatable(EUpdateTime.LateUpdate, hash);
+        }
+
+        public void FrameUpdate(float deltaTime) {
             stateMachine.Update(deltaTime);
         }
 
-        public void FixUpdate(float deltaTime)
-        {
+        public void FixUpdate(float deltaTime) {
             physicsModule.Update(deltaTime);
             tweenableModule.Update(deltaTime);
             stateMachine.FixedUpdate(deltaTime);
         }
 
-        public Vector3 Position => playerGO.transform.position;
+        public void LateUpdate(float deltaTime) {
+            stateMachine.LateUpdate(deltaTime);
+        }
     }
 }

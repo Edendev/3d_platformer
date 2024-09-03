@@ -1,7 +1,8 @@
-using UnityEngine;
-
 namespace Game.Systems
 {
+    /// <summary>
+    /// Handles the count of collected collectibles and communicates with the UI to update the counter.
+    /// </summary>
     public class CollectiblesSystem : ISystem
     {
         public ESystemAccessType AccessType => ESystemAccessType.Public;
@@ -17,14 +18,12 @@ namespace Game.Systems
 
         public void Destroy() { }
 
-        public void AddCollectible()
-        {
+        public void AddCollectible() {
             collectiblesCount++;
             gameUI.SetCollectibleCount(collectiblesCount);
         }
 
-        public void RemoveCollectibles(int count)
-        {
+        public void RemoveCollectibles(int count) {
             collectiblesCount -= count;
             gameUI.SetCollectibleCount(collectiblesCount);
         }

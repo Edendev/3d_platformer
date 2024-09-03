@@ -11,6 +11,9 @@ using UnityEditor;
 
 namespace Editor.Utils
 {
+    /// <summary>
+    /// Allows serializing abstract classes and interfaces.
+    /// </summary>
     [CustomPropertyDrawer(typeof(SubclassSelectorPropertyAttribute))]
     public class SubclassPropertyDrawer : PropertyDrawer
     {

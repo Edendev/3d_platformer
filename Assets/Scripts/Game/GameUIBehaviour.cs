@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 namespace Game
 {
+    /// <summary>
+    /// Container of all UI references in scene. Provides functionality to enable/disable and modify UI elements on request.
+    /// </summary>
     public class GameUIBehaviour : MonoBehaviour
     {
         [SerializeField] private Button startGameButton;

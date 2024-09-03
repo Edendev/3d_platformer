@@ -1,7 +1,9 @@
 using Game.PhysicsSystem;
 using Game.Player;
 using Game.Settings;
+using Game.Interaction;
 using UnityEngine;
+using Game.Systems;
 
 namespace Game.States
 {
@@ -11,12 +13,16 @@ namespace Game.States
         private readonly float rotationSpeed = 1f;
         private readonly Transform cameraTransform;
 
-        public PlayerWalkingState(uint id, string name, StateMachine stateMachine, Animator animator, PhysicsModule physics, PlayerSO playerSO, Transform cameraTransform) : base(id, name, stateMachine, animator, physics) {
+        private KeyCode jumpKey;
+
+        public PlayerWalkingState(uint id, string name, StateMachine stateMachine, Animator animator, InteractionModule interaction, PhysicsModule physics, 
+            PlayerSO playerSO, Transform cameraTransform, SettingsSystem settings) 
+            : base(id, name, stateMachine, animator, interaction, physics, settings) {
             this.walkingSpeed = playerSO.WalkingSpeed;
             this.rotationSpeed = playerSO.RotationSpeed;
             this.cameraTransform = cameraTransform;
+            settings.TryGetActionKey(EPlayerAction.Jump, out jumpKey);
         }
-        public override System.Type GetType() => typeof(PlayerWalkingState);
 
         public override void Enter() {
             base.Enter();
@@ -26,8 +32,7 @@ namespace Game.States
         public override void Update(float deltaTime) {
             base.Update(deltaTime);
 
-            if (physics.IsGrounded && Input.GetKey(KeyCode.Space))
-            {
+            if (physics.IsGrounded && Input.GetKey(jumpKey)) {
                 StateMachine.ChangeState(StateDefinitions.Player.Jumping);
             }
 
@@ -43,7 +48,10 @@ namespace Game.States
             move.y = 0f;
             move = move != Vector3.zero ? move.normalized : move;
             MoveTowards(move, walkingSpeed, deltaTime);
-            FaceTowards(move, rotationSpeed, deltaTime);    
+            FaceTowards(move, rotationSpeed, deltaTime);
+
+            interaction.TouchInteract();
+            interaction.InputInteract();
         }
 
         public override void Exit() {

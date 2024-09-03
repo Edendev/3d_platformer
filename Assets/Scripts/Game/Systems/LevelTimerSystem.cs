@@ -2,14 +2,17 @@ using UnityEngine;
 
 namespace Game.Systems
 {
+    /// <summary>
+    /// Functions as a level timer. Communicates with the UI to update the counter.
+    /// </summary>
     public class LevelTimerSystem : ISystem
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
+        private readonly int hash;
+
         private readonly UpdateSystem updateSystem;
         private readonly GameUIBehaviour gameUI;
-
-        private readonly int hash;
 
         private float timer;
 
@@ -23,19 +26,16 @@ namespace Game.Systems
 
         public void Destroy() { }
 
-        public void Start()
-        {
+        public void Start() {
             timer = Time.time;
-            updateSystem.AddUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash, Update);
+            updateSystem.AddUpdatable(EUpdateTime.FrameUpdate, hash, Update);
         }
 
-        public void Stop()
-        {
-            updateSystem.RemoveUpdatable(UpdateSystem.EUpdateTime.FrameUpdate, hash);
+        public void Stop() {
+            updateSystem.RemoveUpdatable(EUpdateTime.FrameUpdate, hash);
         }
 
-        public void Update(float deltaTime)
-        {
+        public void Update(float deltaTime) {
             float elapsed = Time.time - timer;
             if (Time.time - timer >= 1) gameUI.SetTimer(Mathf.FloorToInt(elapsed / 60f), (int)(elapsed % 60));
         }

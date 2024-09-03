@@ -1,9 +1,5 @@
 using Game.SceneManagement;
 using Game.Systems;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
 
 namespace Game.States
 {
@@ -19,36 +15,30 @@ namespace Game.States
             this.settingsSystem = settingsSystem;
             this.gameUI = gameUI;
         }
-        public override System.Type GetType() => typeof(GameLevelCompletedState);
-        public override void Enter()
-        {
+
+        public override void Enter() {
             base.Enter();
             camera.ChangeState(StateDefinitions.Camera.UI);
             gameUI.EnableLevelCompletedText();
             gameUI.EnableRestartButton();
             gameUI.SubscribeToRestartGameButtonClickEvent(OnRestartButtonClickEvent);
-            UnityEngine.Debug.Log(GameManager.Instance.CurrentLevelId + 1);
-            if (settingsSystem.HasLevel(GameManager.Instance.CurrentLevelId + 1))
-            {
+            if (settingsSystem.HasLevel(GameManager.Instance.CurrentLevelId + 1)) {
                 gameUI.EnableNextLevelButton();
                 gameUI.SubscribeToNextLevelGameButtonClickEvent(OnNextLevelButtonClickEvent);
             }
         }
 
-        private void OnRestartButtonClickEvent()
-        {
+        private void OnRestartButtonClickEvent() {
             StateMachine.ChangeState(StateDefinitions.GameState.Level);
         }
 
-        private void OnNextLevelButtonClickEvent()
-        {
+        private void OnNextLevelButtonClickEvent() {
             nextSceneBuildIndex = settingsSystem.GetLevelSceneBuildIndex(GameManager.Instance.CurrentLevelId + 1);
             if (nextSceneBuildIndex == -1) return;
             ScenesManager.Instance.LoadScene(nextSceneBuildIndex);
         }
 
-        public override void Exit()
-        {
+        public override void Exit() {
             gameUI.DisableLevelCompletedText();
             gameUI.DisableRestartButton();
             gameUI.DisableNextLevelButton();

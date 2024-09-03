@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Game.Transformables
+namespace Game.Interaction
 {
     public interface IInteractionAction
     {

@@ -1,6 +1,5 @@
 using Game.CameraControl;
 using Game.Player;
-using Game.CameraControl;
 using UnityEngine;
 
 namespace Game.Settings

@@ -1,5 +1,4 @@
 using System;
-using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Utils

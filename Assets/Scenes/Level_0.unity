@@ -2673,11 +2673,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5655428780427598431, guid: 9edd91e336928c4449b4cd7e177d4fc6, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5655428780427598431, guid: 9edd91e336928c4449b4cd7e177d4fc6, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 5655428780427598431, guid: 9edd91e336928c4449b4cd7e177d4fc6, type: 3}
       propertyPath: m_LocalScale.z
@@ -3096,12 +3096,12 @@ MonoBehaviour:
     - rid: 7480995787990106114
       type: {class: TranslateTransformableAction, ns: Game.Transformables, asm: Assembly-CSharp}
       data:
-        destination: {x: -2, y: 0, z: 0}
+        destination: {x: -3, y: 0, z: 0}
         speed: 1
     - rid: 7480995787990106115
       type: {class: TranslateTransformableAction, ns: Game.Transformables, asm: Assembly-CSharp}
       data:
-        destination: {x: 2, y: 0, z: 0}
+        destination: {x: 3, y: 0, z: 0}
         speed: 1
 --- !u!114 &1967752188 stripped
 MonoBehaviour:

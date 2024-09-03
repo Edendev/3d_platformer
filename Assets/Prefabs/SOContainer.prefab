@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameSettings: {fileID: 11400000, guid: 43cf5252a6955bc4fa43fbc7b11deb38, type: 2}
+  inputSettings: {fileID: 11400000, guid: aa2c96ee261062f4a9afcb1f047f66fc, type: 2}
   levelSettings:
   - {fileID: 11400000, guid: 8c2c059180ae2d24680f3cfad46fc257, type: 2}
   - {fileID: 11400000, guid: 1e143c367b5f1a247af3787e4ad55541, type: 2}

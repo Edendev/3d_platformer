@@ -6,7 +6,10 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Game
-{    
+{
+    /// <summary>
+    /// Performs the update of all updatable actions in a single loop over a unidimensional array.
+    /// </summary>
     public class GameUpdater : IDisposable
     {
         private const int ARRAY_CAPACITY_INCREASE = 10;
@@ -20,15 +23,13 @@ namespace Game
             updatables = new Action<float>[settingsSystem.GetLevelUpdatablesCapacity(GameManager.Instance.CurrentLevelId)];
         }
         
-        public void Update(float deltaTime)
-        {
+        public void Update(float deltaTime) {
             for (int i = 0; i < currentUpdatablesIndex; i++) { 
                 updatables[i].Invoke(deltaTime);
             }
         }
 
-        public void AddUpdatable(int hash, Action<float> updatable)
-        {
+        public void AddUpdatable(int hash, Action<float> updatable) {
             if (updatablesIndexes.ContainsKey(hash)) return;
 
             if (currentUpdatablesIndex >= updatables.Length)
@@ -46,24 +47,17 @@ namespace Game
             currentUpdatablesIndex++;
         }
 
-        public void RemoveUpdatable(int hash)
-        {
+        public void RemoveUpdatable(int hash) {
             if (!updatablesIndexes.ContainsKey(hash)) return;
-
-            int endIndex = currentUpdatablesIndex >= updatables.Length ? updatables.Length : currentUpdatablesIndex + 1;
-            for (int i = updatablesIndexes[hash] + 1; i < endIndex; i++)
-            {
-                updatables[i - 1] = updatables[i];
-            }
-
-            updatables[currentUpdatablesIndex] = null;
+            updatables[updatablesIndexes[hash]] = updatables[currentUpdatablesIndex - 1];
+            updatables[currentUpdatablesIndex - 1] = null;
             updatablesIndexes.Remove(hash);
             currentUpdatablesIndex--;
         }
 
-        public void Dispose()
-        {
-
+        public void Dispose() {
+            updatablesIndexes.Clear();
+            updatables = null;
         }
     }
 }

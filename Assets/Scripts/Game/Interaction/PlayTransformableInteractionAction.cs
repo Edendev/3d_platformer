@@ -1,5 +1,3 @@
-
-using Game.Systems;
 using Game.Transformables;
 using UnityEngine;
 
@@ -10,13 +8,11 @@ namespace Game.Interaction
         [SerializeField] private TransformableBehaviour transformable;
         [SerializeField] private bool playSwapped = false;
         public void Initialize() { }
-        public void Perform(GameObject interactable, GameObject interactor)
-        {
+        public void Perform(GameObject interactable, GameObject interactor) {
             if (playSwapped) transformable?.TryPlaySwapped();
             else transformable?.TryPlay();
         }
-        public void Reset(GameObject interactable)
-        {
+        public void Reset(GameObject interactable) {
             transformable?.TryStop();
         }
     }

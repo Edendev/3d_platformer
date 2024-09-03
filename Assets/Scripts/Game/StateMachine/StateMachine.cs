@@ -4,17 +4,14 @@ using UnityEngine;
 
 namespace Game.States
 {
+    /// <summary>
+    /// Finite state machine implementation.
+    /// </summary>
     public class StateMachine : IDisposable
     {
-        public State CurrentState => currentState;
-        public State PreviousState => previousState; 
-        public State NextState => nextState;
-
         private Dictionary<uint, State> statesByID = new Dictionary<uint, State>();
         private Dictionary<string, State> statesByName = new Dictionary<string, State>();
         private State currentState;
-        private State previousState;
-        private State nextState;
 
         public StateMachine() { }
 
@@ -42,8 +39,7 @@ namespace Game.States
         public bool ChangeState(uint stateID) {
             if (!statesByID.ContainsKey(stateID)) return false;
             if (currentState != null && currentState.ID == stateID) return false;
-            previousState = currentState;
-            nextState = statesByID[stateID];
+            State previousState = currentState;
             if (previousState != null) previousState.Exit();
             currentState = statesByID[stateID];
             currentState.Enter();
@@ -53,8 +49,7 @@ namespace Game.States
         public bool ChangeState(string stateName) {
             if (!statesByName.ContainsKey(stateName)) return false;
             if (currentState != null && currentState.Name == stateName) return false;
-            previousState = currentState;
-            nextState = statesByName[stateName];
+            State previousState = currentState;
             if (previousState != null) previousState.Exit();
             currentState = statesByName[stateName];
             currentState.Enter();
@@ -62,26 +57,8 @@ namespace Game.States
         }
 
         public void ExitMachine() {
-            previousState = currentState;
-            nextState = null;
             if (currentState != null) currentState.Exit();
             currentState = null;
-        }
-
-        public bool GetStateByID(uint id, out State state) {
-            return statesByID.TryGetValue(id, out state);
-        }
-
-        public bool GetStateByName(string name, out State state) {
-            return statesByName.TryGetValue(name, out state);
-        }
-
-        public bool GetStateByName<T>(string name, out T state) 
-            where T : State 
-        {
-            bool success = statesByName.TryGetValue(name, out State _state);
-            state = success ? (T)_state : null;
-            return success;
         }
 
         public void AddState(State state) {
@@ -106,7 +83,6 @@ namespace Game.States
             statesByID.Clear();
             statesByID.Clear();
             currentState = null;
-            previousState = null;
         }
     }
 }
