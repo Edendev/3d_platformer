@@ -7,12 +7,20 @@ namespace Game.Interaction
     {
         [SerializeField] private TransformableBehaviour transformable;
         [SerializeField] private bool playSwapped = false;
+
+        private bool currentReversedState = false;
+
         public void Initialize() { }
         public void Perform(GameObject interactable, GameObject interactor) {
-            if (playSwapped) transformable?.TryPlaySwapped();
-            else transformable?.TryPlay();
+            if (transformable == null) return;
+            if (playSwapped) {                
+                transformable.TryPlay(currentReversedState);
+                currentReversedState = !currentReversedState;
+            }
+            else transformable.TryPlay();
         }
         public void Reset(GameObject interactable) {
+            currentReversedState = false;
             transformable?.TryStop();
         }
     }

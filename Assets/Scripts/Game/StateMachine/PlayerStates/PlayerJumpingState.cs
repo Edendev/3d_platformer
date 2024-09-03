@@ -59,6 +59,10 @@ namespace Game.States
             float deltaHeight = animator.transform.position.y - startHeight;
             bool hasReachedMinJumpTime = Time.time - jumpTimer >= minJumpTime; // make sure it performs a minimum jump when pressing jump for a very short time
 
+            float horizontal = Input.GetAxis("Horizontal");
+            float vertical = Input.GetAxis("Vertical");
+            bool isMoving = !Mathf.Approximately(horizontal, 0f) || !Mathf.Approximately(vertical, 0f);
+
             if (!isStopping && (deltaHeight >= maxJumpHeight || (hasReachedMinJumpTime && !Input.GetKey(jumpKey)))) {
                 isStopping = true;
                 decelerationTimer = Time.time;
@@ -66,7 +70,11 @@ namespace Game.States
             }
 
             if (Mathf.Approximately(currentJumpSpeed, 0f)) {
-                StateMachine.ChangeState(StateDefinitions.Player.Idl);
+                if (isMoving) {
+                    StateMachine.ChangeState(StateDefinitions.Player.Walking);
+                } else {
+                    StateMachine.ChangeState(StateDefinitions.Player.Idl);
+                }
                 return;
             }
 
@@ -82,10 +90,7 @@ namespace Game.States
             MoveTowards(Vector3.up, currentJumpSpeed, deltaTime);
 
             // allow horizontal movement while jumping
-            float horizontal = Input.GetAxis("Horizontal");
-            float vertical = Input.GetAxis("Vertical");
-
-            if (!Mathf.Approximately(horizontal, 0f) || !Mathf.Approximately(vertical, 0f)) {
+            if (isMoving) {
                 Vector3 move = cameraTransform.right * horizontal + cameraTransform.forward * vertical;
                 move.y = 0f;
                 move = move != Vector3.zero ? move.normalized : move;

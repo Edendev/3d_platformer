@@ -1,10 +1,7 @@
 using Game.Interaction;
 using Game.PhysicsSystem;
 using Game.Transformables;
-using System.Collections.Generic;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Game
 {

@@ -30,8 +30,7 @@ namespace Game.Transformables
             initialRotation = transform.rotation;
         }
 
-        public void FrameUpdate(float deltaTime)
-        {
+        public void FrameUpdate(float deltaTime) {
             transformableActions[currentActionIndex].Update(Time.deltaTime);
         }
 
@@ -54,17 +53,6 @@ namespace Game.Transformables
             playReversed = reversed;
             return TryStartTransformableActions();
 
-        }
-
-        /// <summary>
-        /// Try to play always at the opposite reverse state
-        /// </summary>
-        public bool TryPlaySwapped() {
-            playReversed = !playReversed;
-            if (ActiveContainerIndex != -1) {
-                TryStopTransformableActions();
-            }
-            return TryStartTransformableActions();
         }
 
         public bool TryStop() {

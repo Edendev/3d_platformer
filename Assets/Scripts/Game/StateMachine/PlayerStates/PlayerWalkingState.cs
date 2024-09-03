@@ -1,6 +1,5 @@
 using Game.PhysicsSystem;
 using Game.Player;
-using Game.Settings;
 using Game.Interaction;
 using UnityEngine;
 using Game.Systems;
