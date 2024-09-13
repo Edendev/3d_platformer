@@ -11,7 +11,7 @@ using UnityEngine;
 namespace Game.Systems
 {
     /// <summary>
-    /// Handles the game logic and the spawning/despawning of the player. Follows a state machine pattern/
+    /// Handles the game logic and the spawning/despawning of the player. Follows a state machine pattern
     /// </summary>
     public class PlayerSystem : ISystem, IPosition
     {
@@ -87,6 +87,7 @@ namespace Game.Systems
             deathModule?.Dispose();
             updateSystem?.RemoveUpdatable(EUpdateTime.FrameUpdate, hash);
             updateSystem?.RemoveUpdatable(EUpdateTime.FixUpdate, hash);
+            updateSystem?.RemoveUpdatable(EUpdateTime.LateUpdate, hash);
         }
 
         public void SubscribeToDeathEvent(Action listener) => deathModule.onDeath += listener;

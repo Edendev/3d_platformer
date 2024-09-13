@@ -12,7 +12,6 @@ namespace Game.States
         private readonly PlayerSystem playerSystem;
         private readonly TransformablesSystem transformablesSystem;
         private readonly InteractablesSystem interactablesSystem;
-
         private readonly GameUIBehaviour gameUI;
 
         public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, LevelTimerSystem levelTimerSystem, 

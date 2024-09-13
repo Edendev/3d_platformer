@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Settings;
 using Game.Player;
 using UnityEngine;
@@ -35,6 +36,8 @@ namespace Game.Systems
 
         public void Destroy() { }
         
+        public IEnumerable<KeyValuePair<EPlayerAction, KeyCode>> ActionKeys => userSettings.ActionKeys;
+  
         public bool TryGetActionKey(EPlayerAction action, out KeyCode key) {
             return userSettings.TryGetActionKey(action, out key);
         }

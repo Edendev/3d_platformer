@@ -1,3 +1,6 @@
+using Game.Player;
+using Game.Settings;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,6 +21,7 @@ namespace Game
         [SerializeField] private TextMeshProUGUI gameOverText;
         [SerializeField] private TextMeshProUGUI timeCounterText;
         [SerializeField] private TextMeshProUGUI collectiblesCounterText;
+        [SerializeField] private TextMeshProUGUI controlsText;
 
         private void Awake()
         {
@@ -51,6 +55,13 @@ namespace Game
         public void SetLevelTitle(string levelName) => levelTitleText.text = $"Level {levelName}";
         public void SetCollectibleCount(int count) => collectiblesCounterText.text = $"Coins: {count}";
         public void SetTimer(int minutes, int seconds) => timeCounterText.text = $"Time: {minutes}:{seconds}";
+        public void SetControls(IEnumerable<KeyValuePair<EPlayerAction, KeyCode>> actionKeys) {
+            string text = $"Press AWSD or the arrows to Move\n";
+            foreach(KeyValuePair<EPlayerAction, KeyCode> actionKey in actionKeys) {
+                text += $"Press {actionKey.Value} to {PlayerActionHelper.ActionToString(actionKey.Key)}\n";
+            }
+            controlsText.text = text;
+        }
 
         public void SubscribeToStartGameButtonClickEvent(UnityAction action) => startGameButton.onClick.AddListener(action);
         public void UnsubscribeFromStartGameButtonClickEvent(UnityAction action) => startGameButton.onClick.RemoveListener(action);
@@ -58,18 +69,5 @@ namespace Game
         public void UnsubscribeFromRestartGameButtonClickEvent(UnityAction action) => restartGameButton.onClick.RemoveListener(action);
         public void SubscribeToNextLevelGameButtonClickEvent(UnityAction action) => nextLevelGameButton.onClick.AddListener(action);
         public void UnsubscribeFromNextLevelButtonClickEvent(UnityAction action) => nextLevelGameButton.onClick.RemoveListener(action);
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (startGameButton == null) {
-                Debug.LogError($"{nameof(startGameButton)} is missing!");
-            }
-
-            if (restartGameButton == null) {
-                Debug.LogError($"{nameof(restartGameButton)} is missing!");
-            }
-        }
-#endif
     }
 }

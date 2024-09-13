@@ -7,6 +7,8 @@ namespace Game.Settings
 {
     public class UserSettings
     {
+        public IEnumerable<KeyValuePair<EPlayerAction, KeyCode>> ActionKeys => actionKeys;
+
         private Dictionary<EPlayerAction, KeyCode> actionKeys = new Dictionary<EPlayerAction, KeyCode>();
         public UserSettings(InputSettingsSO inputSettingsSO) {
             foreach(InputSettingsSO.PlayerActionKey playerActionKey in inputSettingsSO.PlayerActionKeys) { 

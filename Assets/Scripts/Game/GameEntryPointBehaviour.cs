@@ -30,7 +30,7 @@ namespace Game
 
         private void Start()
         {
-            // Initialize all managers on Start to allow other MonoBehaviour to "initialize" on Awake
+            // Initialize managers
             scenesManager = ScenesManager.Instance;
             gameManager = GameManager.Instance;
 
@@ -51,8 +51,8 @@ namespace Game
             gameManager?.Dispose();
             if (scenesManager != null)
             {
-                scenesManager.onSceneStartsLoading += HandleOnSceneStartsLoading;
-                scenesManager.onSceneFinishLoading += HandleOnSceneFinishLoading;
+                scenesManager.onSceneStartsLoading -= HandleOnSceneStartsLoading;
+                scenesManager.onSceneFinishLoading -= HandleOnSceneFinishLoading;
             }
         }
 

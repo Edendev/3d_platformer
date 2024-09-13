@@ -1,19 +1,19 @@
 using Game.Settings;
-using UnityEngine;
 using Game.States;
 using Game.CameraControl;
 using Game.Interfaces;
+using UnityEngine;
 
 namespace Game.Systems
 {
     /// <summary>
-    /// Handle the logic of the camera. Follows a state machine pattern.
+    /// Handles the logic of the scene camera. Follows a state machine pattern.
     /// </summary>
     public class CameraControlSystem : ISystem
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
-        public Transform CameraTransform => camera.transform;
+        public Transform CameraTransform => cameraTransform;
 
         private readonly int hash;
 
@@ -26,7 +26,7 @@ namespace Game.Systems
         private readonly ObstacleAvoidanceModule obstacleAvoidanceModule;
         
         private readonly UpdateSystem updateSystem;        
-        private readonly Camera camera;
+        private readonly Transform cameraTransform;
 
         public CameraControlSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, SettingsSystem settingsSystem)
         {
@@ -42,23 +42,25 @@ namespace Game.Systems
                 Quaternion.Euler(cameraUIRotation)
             );
 
-            camera = cameraGO.GetComponent<Camera>();
+            Camera camera = cameraGO.GetComponent<Camera>();
             if (camera == null)
             {
                 Debug.LogError($"{nameof(CameraControlSystem)} is missing a Camera component.");
                 return;
             }
 
+            cameraTransform = camera.transform;
+
             obstacleAvoidanceModule = new ObstacleAvoidanceModule(
                 gameSettingsSO.CameraSO.ObstacleAvoidanceRadius,
                 gameSettingsSO.CameraSO.ObstacleAvoidanceSpeed,
                 LayerMask.GetMask("Default"),
-                camera.transform
+                cameraTransform
             );
 
             stateMachine = new StateMachine();
-            UIState = new CameraUIState(0, StateDefinitions.Camera.UI, stateMachine, camera.transform, gameSettingsSO, cameraUIPosition, cameraUIRotation);
-            followTargetState = new CameraFollowTargetState(1, StateDefinitions.Camera.FollowTarget, stateMachine, camera.transform, obstacleAvoidanceModule, gameSettingsSO.CameraSO, settingsSystem);
+            UIState = new CameraUIState(0, StateDefinitions.Camera.UI, stateMachine, cameraTransform, gameSettingsSO, cameraUIPosition, cameraUIRotation);
+            followTargetState = new CameraFollowTargetState(1, StateDefinitions.Camera.FollowTarget, stateMachine, cameraTransform, obstacleAvoidanceModule, gameSettingsSO.CameraSO, settingsSystem);
 
             stateMachine.AddState(followTargetState);
             stateMachine.AddState(UIState);

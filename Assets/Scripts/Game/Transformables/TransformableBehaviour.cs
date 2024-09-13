@@ -17,7 +17,7 @@ namespace Game.Transformables
         [SerializeField] private bool playInLoop;
 
         public ETransformableStartTrigger StartTrigger => startTrigger;
-        public int ActiveContainerIndex { get; set; } = -1; // index set by the TransformableSystem to keep track of the position in the container (array)
+        public int ActiveContainerIndex { get; set; } = -1; // index set by the TransformablesSystem to keep track of the position in the container (array)
 
         private int currentActionIndex = 0;
         private bool playReversed = false;
@@ -46,7 +46,6 @@ namespace Game.Transformables
                 if (reversed != playReversed) {
                     TryStopTransformableActions();
                 } else {
-                    // otherwise do nothing
                     return true;
                 }
             }
@@ -84,8 +83,7 @@ namespace Game.Transformables
             transformableActions[currentActionIndex].Begin(this, playReversed);
         }
 
-        private void PerformNextAction()
-        {
+        private void PerformNextAction() {
             bool isAtLastAction = currentActionIndex == 0 || currentActionIndex == transformableActions.Length - 1;
             if (!playInLoop && isAtLastAction)
             {
@@ -109,8 +107,7 @@ namespace Game.Transformables
             PerformNextAction();
         }
 
-        public void DoReset()
-        {
+        public void DoReset() {
             currentActionIndex = 0;
             transform.position = initialWorldPosition;
             transform.rotation = initialRotation;
@@ -129,8 +126,7 @@ namespace Game.Transformables
         /// <summary>
         /// Action by action reconstruct the path to know the exact start position of a specific action
         /// </summary>
-        public Vector3 GetStartPointForCurrentAction()
-        {
+        public Vector3 GetStartPointForCurrentAction() {
             Vector3 startPoint = initialWorldPosition;
             for (int i = 0; i < currentActionIndex; i++) {
                 startPoint += transformableActions[i].EndPosition;
@@ -141,8 +137,7 @@ namespace Game.Transformables
         /// <summary>
         /// Action by action reconstruct the path to know the exact start rotation of a specific action
         /// </summary>
-        public Quaternion GetStartRotationForCurrentAction()
-        {
+        public Quaternion GetStartRotationForCurrentAction() {
             Quaternion startRotation = initialRotation;
             for (int i = 0; i < currentActionIndex; i++) {
                 startRotation *= transformableActions[i].EndRotation; 

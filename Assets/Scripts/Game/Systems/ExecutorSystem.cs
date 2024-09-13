@@ -1,14 +1,14 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 
 namespace Game.Systems
 {
     /// <summary>
-    /// Contains all game executors and handles any execution request.
+    /// Contains all game executors and handles any action execution request.
     /// </summary>
     public class ExecutorSystem : ISystem
     {
-        public ESystemAccessType AccessType => ESystemAccessType.Private;
+        public ESystemAccessType AccessType => ESystemAccessType.Public;
         
         private readonly int hash;
 

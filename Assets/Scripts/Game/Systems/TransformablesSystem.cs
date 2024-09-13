@@ -9,13 +9,13 @@ namespace Game.Systems
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
-        private int activeTransformablesIndex = 0;
-        private TransformableBehaviour[] activeTransformables = new TransformableBehaviour[0];
-
         private readonly int hash;
 
         private readonly UpdateSystem updateSystem;
         private readonly TransformableBehaviour[] allTransformables;
+
+        private int activeTransformablesIndex = 0;
+        private TransformableBehaviour[] activeTransformables = new TransformableBehaviour[0];
 
         public TransformablesSystem(TransformableBehaviour[] allTransformables, UpdateSystem updateSystem) {
             this.updateSystem = updateSystem;
@@ -25,8 +25,7 @@ namespace Game.Systems
             activeTransformables = new TransformableBehaviour[allTransformables.Length];
 
             // Initialize all transformables
-            foreach(TransformableBehaviour transformable in allTransformables)
-            {
+            foreach(TransformableBehaviour transformable in allTransformables) {
                 transformable.Initialize();
                 transformable.onStarted += HandleOnTransformableStartedEvent;
                 if (transformable.StartTrigger == ETransformableStartTrigger.OnEnable) {
@@ -69,7 +68,7 @@ namespace Game.Systems
         private void HandleOnTransformableStoppedEvent(int index) {
             activeTransformables[index].onStopped -= HandleOnTransformableStoppedEvent;
             activeTransformables[index].ActiveContainerIndex = -1;
-            // Swap last with index
+            // Swap last one with this
             activeTransformables[index] = activeTransformables[activeTransformablesIndex - 1];
             activeTransformables[activeTransformablesIndex - 1] = null;
             activeTransformablesIndex--;

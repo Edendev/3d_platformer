@@ -11,14 +11,14 @@ namespace Game.Systems
     {
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
+        private readonly int hash;
+
         // State machine
         private readonly StateMachine stateMachine;
         private readonly GameStartState gameStartState;
         private readonly GameLevelState gameLevelState;
         private readonly GameLevelCompletedState gameLevelCompleted;
         private readonly GameOverState gameOverState;
-
-        private readonly int hash;
 
         private readonly UpdateSystem updateSystem;
 

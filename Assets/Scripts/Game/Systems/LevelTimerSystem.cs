@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.Systems
 {
     /// <summary>
-    /// Functions as a level timer. Communicates with the UI to update the counter.
+    /// Communicates with the UI to update the level time counter.
     /// </summary>
     public class LevelTimerSystem : ISystem
     {

@@ -27,18 +27,5 @@ namespace Game
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-
-#if UNITY_EDITOR
-        private void OnValidate()
-        {
-            if (gameSettings == null) {
-                Debug.LogError($"{nameof(gameSettings)} is missing!");
-            }
-
-            if (levelSettings == null || levelSettings.Length == 0) {
-                Debug.LogError($"{nameof(levelSettings)} is missing or there are no level settings!");
-            }
-        }
-#endif
     }
 }

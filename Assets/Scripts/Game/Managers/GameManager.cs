@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 namespace Game
 {   
     /// <summary>
-    /// Root C# class managing the game loop
+    /// Root C# class
     /// Container of all persistent and non-persistent systems and scene MonoBehaviours.
     /// Handles the update of the game logic.
     /// </summary>
@@ -77,6 +77,9 @@ namespace Game
                 Debug.LogError($"{nameof(GameUIBehaviour)} is missing in the scene.");
                 return;
             }
+
+            // Update UI controls text
+            gameUI.SetControls(settingsSystem.ActionKeys);
 
             gameKeyElements = GameObject.FindObjectOfType<GameKeyElementsBehaviour>();
 
