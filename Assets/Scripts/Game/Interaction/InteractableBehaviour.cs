@@ -13,9 +13,9 @@ namespace Game.Interaction
 
         private bool hasInteracted = false;
 
-        public void Initialize() {
+        public void Initialize(GameInstance gameInstance) {
             foreach (IInteractionAction action in actions) {
-                action.Initialize();
+                action.Initialize(gameInstance);
             }
         }
 

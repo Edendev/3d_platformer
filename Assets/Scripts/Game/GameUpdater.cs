@@ -1,8 +1,6 @@
 using Game.Systems;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Game
@@ -19,8 +17,8 @@ namespace Game
         private int currentUpdatablesIndex = 0;
         private Action<float>[] updatables = new Action<float>[0];
 
-        public GameUpdater(SettingsSystem settingsSystem) {
-            updatables = new Action<float>[settingsSystem.GetLevelUpdatablesCapacity(GameManager.Instance.CurrentLevelId)];
+        public GameUpdater(GameInstance gameInstance, SettingsSystem settingsSystem) {
+            updatables = new Action<float>[settingsSystem.GetLevelUpdatablesCapacity(gameInstance.CurrentLevelId)];
         }
         
         public void Update(float deltaTime) {

@@ -6,7 +6,7 @@ namespace Game.Systems
     /// <summary>
     /// Container of a group of systems. Has functionality to add/remove and access systems.
     /// </summary>
-    public abstract class SystemGroup : IDisposable
+    public class SystemGroup : IDisposable
     {
         // Systems by hash
         private Dictionary<int, ISystem> systems = new Dictionary<int, ISystem>();
@@ -39,7 +39,7 @@ namespace Game.Systems
             return true;
         }
 
-        public virtual void Dispose() {   
+        public void Dispose() {   
             foreach (ISystem system in systems.Values) {
                 system.Destroy();
             }

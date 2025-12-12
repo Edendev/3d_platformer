@@ -6,6 +6,7 @@ namespace Game.States
 {
     public class GameLevelState : GameState
     {
+        private readonly GameInstance gameInstance;
         private readonly SettingsSystem settingsSystem;
         private readonly LevelTimerSystem levelTimerSystem;
         private readonly TriggerEventsAnnouncer levelCompletedTrigger;
@@ -14,10 +15,11 @@ namespace Game.States
         private readonly InteractablesSystem interactablesSystem;
         private readonly GameUIBehaviour gameUI;
 
-        public GameLevelState(uint id, string name, StateMachine stateMachine, SettingsSystem settingsSystem, LevelTimerSystem levelTimerSystem, 
+        public GameLevelState(uint id, string name, StateMachine stateMachine, GameInstance gameInstance, SettingsSystem settingsSystem, LevelTimerSystem levelTimerSystem, 
             CameraControlSystem camera, PlayerSystem playerSystem, TransformablesSystem transformablesSystem, InteractablesSystem interactablesSystem, TriggerEventsAnnouncer levelCompletedTrigger, GameUIBehaviour gameUI)
             : base(id, name, stateMachine, camera)
         {
+            this.gameInstance = gameInstance;
             this.settingsSystem = settingsSystem;
             this.levelTimerSystem = levelTimerSystem;
             this.playerSystem = playerSystem;
@@ -31,7 +33,7 @@ namespace Game.States
             base.Enter();
             levelCompletedTrigger.onTriggerEnter += HandleOnLevelCompletedTriggerEnterEvent;
             playerSystem.SubscribeToDeathEvent(HandleOnPlayerDeathEvent);
-            playerSystem.SpawnPlayer(settingsSystem.GetLevelStartPosition(GameManager.Instance.CurrentLevelId));
+            playerSystem.SpawnPlayer(settingsSystem.GetLevelStartPosition(gameInstance.CurrentLevelId));
             transformablesSystem.ResetAllTransformables();
             transformablesSystem.Start();
             interactablesSystem.ResetAllInteractables();

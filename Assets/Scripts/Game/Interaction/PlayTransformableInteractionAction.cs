@@ -10,7 +10,7 @@ namespace Game.Interaction
 
         private bool currentReversedState = false;
 
-        public void Initialize() { }
+        public void Initialize(GameInstance gameInstance) { }
         public void Perform(GameObject interactable, GameObject interactor) {
             if (transformable == null) return;
             if (playSwapped) {                

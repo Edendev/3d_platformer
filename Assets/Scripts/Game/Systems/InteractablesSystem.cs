@@ -10,11 +10,11 @@ namespace Game.Systems
         public ESystemAccessType AccessType => ESystemAccessType.Private;
 
         private readonly InteractableBehaviour[] interactables;
-        public InteractablesSystem(InteractableBehaviour[] interactables)
+        public InteractablesSystem(GameInstance gameInstance, InteractableBehaviour[] interactables)
         {
             this.interactables = interactables;
             foreach (InteractableBehaviour interactable in interactables) {
-                interactable.Initialize();
+                interactable.Initialize(gameInstance);
             }
         }
 

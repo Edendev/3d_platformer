@@ -14,11 +14,11 @@ namespace Game.Systems
         // Container for all updaters in the game
         private readonly Dictionary<EUpdateTime, GameUpdater> updaters = new Dictionary<EUpdateTime, GameUpdater>();
 
-        public UpdateSystem(SettingsSystem settingsSystem)
+        public UpdateSystem(GameInstance gameInstance, SettingsSystem settingsSystem)
         {
             // Create all updaters
             foreach (EUpdateTime time in Enum.GetValues(typeof(EUpdateTime))) {
-                this.updaters.Add(time, new GameUpdater(settingsSystem));
+                this.updaters.Add(time, new GameUpdater(gameInstance, settingsSystem));
             }
         }
 

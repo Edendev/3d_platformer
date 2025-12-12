@@ -14,8 +14,7 @@ namespace Game
     {
         private static GameEntryPointBehaviour instance;
 
-        private GameManager gameManager = null;
-        private ScenesManager scenesManager = null;
+        private GameInstance gameInstance = null;
 
         private void Awake()
         {
@@ -30,42 +29,41 @@ namespace Game
 
         private void Start()
         {
-            // Initialize managers
-            scenesManager = ScenesManager.Instance;
-            gameManager = GameManager.Instance;
+            // Create game instance
+            gameInstance = new GameInstance();
 
-            scenesManager.onSceneStartsLoading += HandleOnSceneStartsLoading;
-            scenesManager.onSceneFinishLoading += HandleOnSceneFinishLoading;
+            gameInstance.sceneLoadingStartedEvent += HandleSceneLoadingStartedEvent;
+            gameInstance.sceneLoadingFinishedEvent += HandleSceneLoadingFinishedEvent;
         }
 
-        private void HandleOnSceneStartsLoading(int index) {
+        private void HandleSceneLoadingStartedEvent() {
             enabled = false;
         }
 
-        private void HandleOnSceneFinishLoading(int index) {
+        private void HandleSceneLoadingFinishedEvent() {
             enabled = true;
         }
 
         private void OnDestroy()
         {
-            gameManager?.Dispose();
-            if (scenesManager != null)
+            if (gameInstance != null)
             {
-                scenesManager.onSceneStartsLoading -= HandleOnSceneStartsLoading;
-                scenesManager.onSceneFinishLoading -= HandleOnSceneFinishLoading;
+                gameInstance.sceneLoadingStartedEvent -= HandleSceneLoadingStartedEvent;
+                gameInstance.sceneLoadingFinishedEvent -= HandleSceneLoadingFinishedEvent;
+                gameInstance.Destroy();
             }
         }
 
         private void Update() {
-            gameManager.FrameUpdate(Time.deltaTime);
+            gameInstance.FrameUpdate(Time.deltaTime);
         }
 
         private void FixedUpdate() {
-            gameManager.FixedUpdate(Time.fixedDeltaTime);
+            gameInstance.FixedUpdate(Time.fixedDeltaTime);
         }
 
         private void LateUpdate() {
-            gameManager.LateUpdate(Time.deltaTime);
+            gameInstance.LateUpdate(Time.deltaTime);
         }
     }
 }

@@ -5,7 +5,7 @@ namespace Game.Interaction
 {
     public interface IInteractionAction
     {
-        void Initialize();
+        void Initialize(GameInstance gameInstance);
         void Perform(GameObject interactable, GameObject interactor);
         void Reset(GameObject interactable);
     }

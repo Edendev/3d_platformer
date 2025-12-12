@@ -28,13 +28,13 @@ namespace Game.Systems
         private readonly UpdateSystem updateSystem;        
         private readonly Transform cameraTransform;
 
-        public CameraControlSystem(GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, SettingsSystem settingsSystem)
+        public CameraControlSystem(GameInstance gameInstance, GameSettingsSO gameSettingsSO, UpdateSystem updateSystem, SettingsSystem settingsSystem)
         {
             this.updateSystem = updateSystem;
             SystemHash.TryGetHash(typeof(CameraControlSystem), out hash);
 
-            Vector3 cameraUIPosition = settingsSystem.GetCameraUIPosition(GameManager.Instance.CurrentLevelId);
-            Vector3 cameraUIRotation = settingsSystem.GetCameraUIRotation(GameManager.Instance.CurrentLevelId);
+            Vector3 cameraUIPosition = settingsSystem.GetCameraUIPosition(gameInstance.CurrentLevelId);
+            Vector3 cameraUIRotation = settingsSystem.GetCameraUIRotation(gameInstance.CurrentLevelId);
 
             GameObject cameraGO = GameObject.Instantiate(
                 gameSettingsSO.CameraSO.CameraGO,
